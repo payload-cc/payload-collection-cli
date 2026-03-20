@@ -1,0 +1,41 @@
+{
+  "name": "payload-collection-cli",
+  "version": "1.0.0",
+  "description": "Functional CLI for Payload 3.0 collection management",
+  "bin": {
+    "payload-collection-cli": "./dist/bin.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/bin.ts --format cjs,esm --dts --clean --shims",
+    "release": "pnpm build && pnpm publish --access public",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "payload",
+    "payload-cms",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.32.1",
+  "peerDependencies": {
+    "payload": "^3.0.0"
+  },
+  "dependencies": {
+    "jiti": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "next": "^16.2.0",
+    "payload": "^3.79.1",
+    "react": "^19.2.4",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
