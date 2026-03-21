@@ -6,11 +6,9 @@ Allows for magical, easy-to-use bulk imports, updates, deletions and operations 
 
 ## Installation
 
-*(Note: The package requires publishing to the npm registry. It is currently built for CI/CD)*
-
 ```bash
-pnpm add payload-collection-cli
-# or npm install payload-collection-cli
+pnpm add @payload-cc/payload-collection-cli
+# or npm install @payload-cc/payload-collection-cli
 ```
 
 ## Quick Start
@@ -19,10 +17,10 @@ You can immediately start using the commands without any configuration!
 
 ```bash
 # Bulk create/upsert from jsonlines
-npx payload-collection-cli posts upsert data.jsonl
+npx @payload-cc/payload-collection-cli posts upsert data.jsonl
 
 # Simple JSON update
-npx payload-collection-cli users update '{"email": "user@example.com", "name": "New Name"}'
+npx @payload-cc/payload-collection-cli users update '{"email": "user@example.com", "name": "New Name"}'
 ```
 
 ## Available Actions
