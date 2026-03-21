@@ -27,7 +27,7 @@ async function run() {
   
   // Load CLI mapping config
   let cliConfig = { mappings: {} };
-  const cliCfgPath = path.resolve(root, 'payload-collection.config.ts');
+  const cliCfgPath = path.resolve(root, 'payload-collection-cli.config.ts');
   if (require('fs').existsSync(cliCfgPath)) {
     const imported = await jiti.import(cliCfgPath) as any;
     cliConfig = imported.cliConfig || imported.default || cliConfig;

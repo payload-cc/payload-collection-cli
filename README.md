@@ -13,7 +13,10 @@ pnpm add payload-collection-cli
 
 ## Quick Start
 
-Create a `payload-collection.config.ts` in your Payload project root with your relation mappings:
+You can immediately start using the commands without any configuration!
+
+### Optional: Relation Mappings (payload-collection-cli.config.ts)
+If you want the CLI to magically resolve relation IDs (e.g. searching a User by email to relate to a Post), create a `payload-collection-cli.config.ts` in your Payload project root:
 
 ```typescript
 export const cliConfig = {
