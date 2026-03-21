@@ -1,7 +1,15 @@
 {
   "name": "@payload-cc/payload-collection-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Functional CLI for Payload 3.0 collection management",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/payload-cc/payload-collection-cli.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "bin": {
     "payload-collection-cli": "./dist/bin.js"
   },
