@@ -22,7 +22,7 @@
     "cli"
   ],
   "author": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "packageManager": "pnpm@10.32.1",
   "peerDependencies": {
     "payload": "^3.0.0"
