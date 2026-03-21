@@ -1,6 +1,6 @@
 {
   "name": "@payload-cc/payload-collection-cli",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Functional CLI for Payload 3.0 collection management",
   "repository": {
     "type": "git",
