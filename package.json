@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsup src/index.ts src/bin.ts --format cjs,esm --dts --clean --shims",
     "release": "pnpm build && pnpm publish --access public",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "keywords": [
     "payload",
@@ -36,6 +36,7 @@
     "payload": "^3.79.1",
     "react": "^19.2.4",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
   }
 }

@@ -6,6 +6,8 @@ Allows for magical, easy-to-use bulk imports, updates, deletions and operations 
 
 ## Installation
 
+*(Note: The package requires publishing to the npm registry. It is currently built for CI/CD)*
+
 ```bash
 pnpm add payload-collection-cli
 # or npm install payload-collection-cli
@@ -15,7 +17,23 @@ pnpm add payload-collection-cli
 
 You can immediately start using the commands without any configuration!
 
-### Optional: Relation Mappings (payload-collection-cli.config.ts)
+```bash
+# Bulk create/upsert from jsonlines
+npx payload-collection-cli posts upsert data.jsonl
+
+# Simple JSON update
+npx payload-collection-cli users update '{"email": "user@example.com", "name": "New Name"}'
+```
+
+## Available Actions
+- `create`: Create new records.
+- `update`: Update existing records based on `lookupField`.
+- `delete`: Delete records.
+- `upsert`: Update if existing, create if not.
+
+## Configuration (Optional)
+
+### Relation Mappings (`payload-collection-cli.config.ts`)
 If you want the CLI to magically resolve relation IDs (e.g. searching a User by email to relate to a Post), create a `payload-collection-cli.config.ts` in your Payload project root:
 
 ```typescript
@@ -32,18 +50,9 @@ export const cliConfig = {
 }
 ```
 
-Then run commands easily!
+Now, when you supply an `author: "user@example.com"` property to a `posts` collection insertion, the CLI will look up the user by email in the exact database rather than forcing you to hard-code Payload ObjectId strings!
 
-```bash
-# Bulk create/upsert from jsonlines
-npx payload-collection-cli posts upsert data.jsonl
+## Development & CI/CD
 
-# Simple JSON update
-npx payload-collection-cli users update '{"email": "user@example.com", "name": "New Name"}'
-```
-
-## Available Actions
-- `create`: Create new records.
-- `update`: Update existing records based on `lookupField`.
-- `delete`: Delete records.
-- `upsert`: Update if existing, create if not.
+- Tests are powered by `vitest` to remain fast and lightweight. 
+- GitHub Actions automatically run checks on PRs, and publish the `dist/` bundle (excluding test codes and local configs) when a new Release is created on GitHub!
