@@ -1,5 +1,5 @@
 {
-  "name": "payload-collection-cli",
+  "name": "@payload-cc/payload-collection-cli",
   "version": "1.0.0",
   "description": "Functional CLI for Payload 3.0 collection management",
   "bin": {
