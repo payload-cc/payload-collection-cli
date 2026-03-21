@@ -14,13 +14,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
+      - uses: jdx/mise-action@v2
         with:
-          version: 10
-      - uses: actions/setup-node@v4
+          install: true
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
         with:
-          node-version: 22.x
-          cache: 'pnpm'
+          path: ~/.local/share/pnpm/store/v3
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - run: pnpm build
