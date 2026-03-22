@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'docs/**'
+      - 'src/**'
+      - 'scripts/**'
       - '.github/workflows/deploy-docs.yml'
       - 'package.json'
       - 'pnpm-lock.yaml'
