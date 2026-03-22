@@ -6,14 +6,23 @@ export async function resolveRelations(payload: Payload, collectionSlug: string,
   if (!collection) throw new Error(`Collection "${collectionSlug}" not found.`);
 
   const resolved = { ...data };
+  const mappingConfig = config.mappings[collectionSlug];
+
+  if (mappingConfig?.defaults) {
+    for (const [k, v] of Object.entries(mappingConfig.defaults)) {
+      if (resolved[k] === undefined || resolved[k] === null) {
+        resolved[k] = v;
+      }
+    }
+  }
 
   for (const field of collection.config.fields) {
-    if (field.type === 'relationship' && data[field.name]) {
+    if (field.type === 'relationship' && resolved[field.name]) {
       const relationTo = Array.isArray(field.relationTo) ? field.relationTo[0] : field.relationTo;
       const mapping = config.mappings[relationTo as string];
       if (!mapping) continue;
 
-      const rawValue = data[field.name];
+      const rawValue = resolved[field.name];
       const isArray = Array.isArray(rawValue);
       const values = isArray ? rawValue : [rawValue];
       const resolvedIds: (string | number)[] = [];
@@ -28,6 +37,12 @@ export async function resolveRelations(payload: Payload, collectionSlug: string,
 
           if (found.docs.length > 0) {
             resolvedIds.push(found.docs[0].id);
+          } else if (mapping.onNotFound === 'create') {
+            const created = await payload.create({
+              collection: relationTo as any,
+              data: { [mapping.lookupField]: val },
+            });
+            resolvedIds.push(created.id);
           } else if (mapping.onNotFound === 'error') {
             throw new Error(`Relation not found: ${relationTo} (${mapping.lookupField}=${val})`);
           } else {

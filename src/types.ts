@@ -1,6 +1,7 @@
 export interface MappingConfig {
   lookupField: string;
   onNotFound?: 'error' | 'ignore' | 'create';
+  defaults?: Record<string, any>;
 }
 
 export interface CLIConfig {

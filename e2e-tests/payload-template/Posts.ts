@@ -14,5 +14,11 @@ export const Posts: CollectionConfig = {
       relationTo: 'users',
       required: true,
     },
+    {
+      name: 'category',
+      type: 'relationship',
+      relationTo: 'categories',
+      required: true,
+    },
   ],
 }
