@@ -8,7 +8,7 @@
 **The missing CLI for Payload 3.0. Manage collections without writing boilerplate scripts.**
 
 <p align="center">
-  <img src="docs/public/logo.png" alt="Payload Collection CLI Logo" width="200"/>
+  <img src="https://raw.githubusercontent.com/payload-cc/payload-collection-cli/main/docs/public/logo.png" alt="Payload Collection CLI Logo" width="200"/>
 </p>
 
 <p align="center">
