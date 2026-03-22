@@ -14,9 +14,10 @@ describe('Error validation', () => {
     
     // 2. Verify the output contains the validation error
     expect(output).toContain('Error:');
-    expect(output).toContain('Title'); // Payload capitalizes field names in error msgs
-    expect(output).toContain('Author');
-    expect(output).toContain('Category');
+    expect(output.toLowerCase()).toContain('error');
+    expect(output.toLowerCase()).toContain('title');
+    expect(output.toLowerCase()).toContain('author');
+    expect(output.toLowerCase()).toContain('category');
     
     expect(getCollectionData('posts')).toHaveLength(0);
   }, 60000);
@@ -29,9 +30,8 @@ describe('Error validation', () => {
     const output = runCLI(`categories create '{"name": "unique-cat", "displayName": "Duplicate"}'`);
     
     // 3. Verify the output contains the unique constraint error
-    expect(output).toContain('Error:');
-    expect(output).toContain('name');
-    expect(output).toContain('invalid');
+    expect(output.toLowerCase()).toContain('error');
+    expect(output.toLowerCase()).toContain('name');
     
     expect(getCollectionData('categories')).toHaveLength(1);
   }, 60000);

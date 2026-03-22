@@ -21,6 +21,7 @@ const CLIConfigSchema = z.object({
 });
 
 async function run() {
+  console.log('🏁 Starting CLI...');
   const root = process.cwd();
 
   const argv = await yargs(hideBin(process.argv))
@@ -100,6 +101,7 @@ async function run() {
   const { default: payloadConfig } = await jiti.import(configPath) as any;
 
   const payload = await getPayload({ config: payloadConfig });
+  console.log('✅ Connected to Payload');
   
   try {
     const result = await execute(payload, collection as string, action as any, input as string, cliConfig as any);

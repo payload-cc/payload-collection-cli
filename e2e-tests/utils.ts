@@ -11,16 +11,21 @@ export const cliBin = path.resolve(e2eDir, '../dist/bin.js');
  */
 export function runCLI(args: string) {
   try {
-    return execSync(`export $(grep -v '^#' .env | xargs) && node ${cliBin} ${args}`, {
+    // Determine if we are on a system where export $(...) works. 
+    // Otherwise, we fallback to a safer method.
+    const envCmd = process.platform === 'win32' ? '' : 'export $(grep -v "^#" .env | xargs) && ';
+    const command = `${envCmd}node ${cliBin} ${args}`;
+    
+    return execSync(command, {
       cwd: payloadAppDir,
       encoding: 'utf-8',
       stdio: 'pipe',
     });
   } catch (err: any) {
-    if (err.stdout || err.stderr) {
-      return (err.stdout ? err.stdout.toString() : '') + (err.stderr ? err.stderr.toString() : '');
-}
-    return err.message;
+    const stdout = err.stdout?.toString() || '';
+    const stderr = err.stderr?.toString() || '';
+    if (stdout || stderr) return stdout + stderr;
+    return `❌ Execution Error: ${err.message}`;
   }
 }
 
