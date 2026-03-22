@@ -9,10 +9,10 @@ This page showcases common use cases for the **Payload Collection CLI**, using l
 In this example, we upsert user records using `email` as the unique lookup field instead of the default `id`.
 
 ### Data (`data.jsonl`)
-<<< @/../e2e-tests/scenarios/success-mapping-upsert/data.jsonl
+<<< ../e2e-tests/scenarios/success-mapping-upsert/data.jsonl
 
 ### Configuration (`config.ts`)
-<<< @/../e2e-tests/scenarios/success-mapping-upsert/config.ts
+<<< ../e2e-tests/scenarios/success-mapping-upsert/config.ts
 
 ### Command
 ```bash
@@ -26,10 +26,10 @@ npx @payload-cc/payload-collection-cli -c ./config.ts users upsert data.jsonl
 Resolve relational fields (like `author` or `category`) using pure string identifiers (email, slug, etc.) rather than technical IDs.
 
 ### Data (`data.jsonl`)
-<<< @/../e2e-tests/scenarios/relation-posts-author/data.jsonl
+<<< ../e2e-tests/scenarios/relation-posts-author/data.jsonl
 
 ### Configuration (`config.ts`)
-<<< @/../e2e-tests/scenarios/relation-posts-author/config.ts
+<<< ../e2e-tests/scenarios/relation-posts-author/config.ts
 
 ### Command
 ```bash
@@ -43,7 +43,7 @@ npx @payload-cc/payload-collection-cli -c ./config.ts posts create data.jsonl
 Automatically create missing related records (e.g., a new Category) while importing main records (e.g., Posts).
 
 ### Configuration (`config.ts`)
-<<< @/../e2e-tests/scenarios/relation-auto-create-default/config.ts
+<<< ../e2e-tests/scenarios/relation-auto-create-default/config.ts
 
 ---
 

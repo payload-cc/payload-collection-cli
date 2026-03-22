@@ -40,6 +40,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
+      { text: 'Examples', link: '/examples' },
       { text: 'Specs', link: '/references/specs_detail' },
       { text: 'AI Context', link: '/ai' }
     ],
