@@ -38,7 +38,12 @@ For detailed behavior specifications (such as how identifier lookups work strict
 ## Configuration (Optional)
 
 ### Relation Mappings (`payload-collection-cli.config.ts`)
-If you want the CLI to magically resolve relation IDs (e.g. searching a User by email to relate to a Post), create a `payload-collection-cli.config.ts` in your Payload project root:
+By default, Payload relations require you to provide target document IDs (e.g., ObjectIDs or numeric IDs). The CLI can magically resolve these relations by searching for human-readable fields instead.
+
+**Example Scenario**:
+Assume your `posts` collection has a relationship field named `author` that references the `users` collection. Instead of manually finding and hard-coding the user's database ID, you want to simply provide their email address.
+
+Create a `payload-collection-cli.config.ts` in your Payload project root (or pass it via `-c`) to define the `lookupField` for the `users` collection:
 
 ```typescript
 export const cliConfig = {
@@ -54,7 +59,7 @@ export const cliConfig = {
 }
 ```
 
-Now, when you supply an `author: "user@example.com"` property to a `posts` collection insertion, the CLI will look up the user by email in the exact database rather than forcing you to hard-code Payload ObjectId strings!
+Now, when you supply an `author: "user@example.com"` property to a `posts` collection insertion, the CLI will intercept this relationship, look up the `users` collection by the `email` field, and automatically replace the email string with the actual database ID before inserting!
 
 ## Development & CI/CD
 
