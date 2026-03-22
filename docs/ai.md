@@ -1,14 +1,12 @@
----
-editLink: false
-outline: deep
----
-
 # AI Coding Context
 
-This file is a consolidated summary for AI agents, transcluded from the project's primary documentation.
+> [!TIP]
+> This page consolidates the entire project documentation into a single Markdown block for easy copying into AI coding assistants. Use the **copy button** at the top right of the code block below.
 
-<!-- @include: ../README.md -->
+````markdown
+@include: ../README.md
 
 ---
 
-<!-- @include: ./references/specs_detail.md -->
+@include: ./references/specs_detail.md
+````
