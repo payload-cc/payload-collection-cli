@@ -1,6 +1,6 @@
 export const cliConfig = {
-  mappings: {
-    users: { lookupField: 'email' },
-    categories: { lookupField: 'name', onNotFound: 'create' },
-  },
+	mappings: {
+		users: { lookupField: "email" },
+		categories: { lookupField: "name", onNotFound: "create" },
+	},
 };
