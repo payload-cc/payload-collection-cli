@@ -26,15 +26,3 @@ features:
   - title: 🛡 Native Performance
     details: Uses Local API to ensure all Hooks and Validations run.
 ---
-
-<p align="center">
-  <a href="https://github.com/payload-cc/payload-collection-cli/actions/workflows/ci.yml">
-    <img src="https://github.com/payload-cc/payload-collection-cli/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
-  </a>
-  <a href="https://www.npmjs.com/package/@payload-cc/payload-collection-cli">
-    <img src="https://img.shields.io/npm/v/@payload-cc/payload-collection-cli" alt="NPM Version" />
-  </a>
-  <a href="https://github.com/payload-cc/payload-collection-cli/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/payload-cc/payload-collection-cli" alt="License" />
-  </a>
-</p>
