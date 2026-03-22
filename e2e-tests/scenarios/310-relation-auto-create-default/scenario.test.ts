@@ -13,9 +13,10 @@ describe('Relation auto-create and defaults', () => {
     // 2. `onNotFound: 'create'`: The "default" category doesn't exist in DB, so CLI creates it on-the-fly!
 
     // 1. Preparation: Upsert the author
-    const userDataPath = path.resolve(__dirname, '..', '120-success-mapping-upsert', 'data.jsonl');
-    const userConfigPath = path.resolve(__dirname, '..', '120-success-mapping-upsert', 'config.ts');
-    runCLI(`-c ${userConfigPath} users upsert ${userDataPath}`);
+    // 1. Preparation: Upsert the author using local fixture
+    const userDataPath = path.resolve(__dirname, 'users.jsonl');
+    const userConfig = JSON.stringify({ mappings: { users: { lookupField: 'email' } } });
+    runCLI(`-j '${userConfig}' users upsert ${userDataPath}`);
 
     // 2. Main Execution: Upsert the Post (lacking category!)
     const dataPath = path.resolve(__dirname, 'data.jsonl');

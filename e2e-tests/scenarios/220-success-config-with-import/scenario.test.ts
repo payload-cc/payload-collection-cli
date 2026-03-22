@@ -15,9 +15,10 @@ describe('Config with cross-file import', () => {
     // Combined with onNotFound:'create', the category is auto-created from that imported value.
 
     // 1. Preparation: Upsert the author
-    const userDataPath = path.resolve(__dirname, '..', '120-success-mapping-upsert', 'data.jsonl');
-    const userConfigPath = path.resolve(__dirname, '..', '120-success-mapping-upsert', 'config.ts');
-    runCLI(`-c ${userConfigPath} users upsert ${userDataPath}`);
+    // 1. Preparation: Upsert the author using local fixture
+    const userDataPath = path.resolve(__dirname, 'users.jsonl');
+    const userConfig = JSON.stringify({ mappings: { users: { lookupField: 'email' } } });
+    runCLI(`-j '${userConfig}' users upsert ${userDataPath}`);
 
     // 2. Main Execution: Upsert a Post without specifying category
     //    The config's defaults.category is imported from src/constants.ts => 'uncategorized'

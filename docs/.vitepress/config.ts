@@ -46,15 +46,24 @@ export default defineConfig({
 
               return scenarios.map(name => {
                 const scenarioPath = path.join(scenariosDir, name)
-                // Strip numeric prefix (e.g., 100-) for the title
-                const title = name.replace(/^\d+-/, '').split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+                const readmePath = path.join(scenarioPath, 'README.md')
+                
+                let readmeContent = ''
+                let title = name.replace(/^\d+-/, '').split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+                
+                if (fs.existsSync(readmePath)) {
+                  const fullReadme = fs.readFileSync(readmePath, 'utf-8')
+                  const titleMatch = fullReadme.match(/^#\s+(.+)$/m)
+                  if (titleMatch) {
+                    title = titleMatch[1]
+                    readmeContent = fullReadme.replace(/^#\s+.+$/m, '').trim() + '\n\n'
+                  } else {
+                    readmeContent = fullReadme.trim() + '\n\n'
+                  }
+                }
                 
                 let output = `## ${title}\n\n`
-                
-                const readmePath = path.join(scenarioPath, 'README.md')
-                if (fs.existsSync(readmePath)) {
-                  output += fs.readFileSync(readmePath, 'utf-8') + '\n\n'
-                }
+                output += readmeContent
                 
                 const dataPath = path.join(scenarioPath, 'data.jsonl')
                 if (fs.existsSync(dataPath)) {
