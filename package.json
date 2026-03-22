@@ -25,9 +25,8 @@
     "release": "pnpm build && pnpm publish --access public",
     "test": "vitest run tests/*",
     "test:e2e": "vitest run e2e-tests/scenarios/ --no-file-parallelism",
-    "docs:generate": "node scripts/generate-ai-doc.js",
-    "docs:dev": "npm run docs:generate && vitepress dev docs",
-    "docs:build": "npm run docs:generate && vitepress build docs",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
   "keywords": [

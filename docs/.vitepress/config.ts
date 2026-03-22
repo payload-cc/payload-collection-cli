@@ -4,6 +4,17 @@ export default defineConfig({
   title: "Payload Collection CLI",
   description: "Functional CLI for Payload 3.0 collection management",
   base: '/payload-collection-cli/',
+  markdown: {
+    config: (md) => {
+      const originalRender = md.render;
+      md.render = function (this: any, src, env) {
+        if (env.path && env.path.endsWith('ai.md')) {
+          src = src.replace(/\(docs\//g, '(/');
+        }
+        return originalRender.call(this, src, env);
+      };
+    }
+  },
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
