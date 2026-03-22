@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/payload-cc/payload-collection-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/payload-cc/payload-collection-cli/actions/workflows/ci.yml)
 [![NPM Version](https://img.shields.io/npm/v/@payload-cc/payload-collection-cli)](https://www.npmjs.com/package/@payload-cc/payload-collection-cli)
-[![License](https://img.shields.io/github/license/payload-cc/payload-collection-cli)](LICENSE)
+[![License](https://img.shields.io/github/license/payload-cc/payload-collection-cli)](https://github.com/payload-cc/payload-collection-cli/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-VitePress-blue)](https://payload-cc.github.io/payload-collection-cli/)
 
 **The missing CLI for Payload 3.0. Manage collections without writing boilerplate scripts.**
