@@ -1,16 +1,9 @@
 name: Deploy Docs
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'docs/**'
-      - 'src/**'
-      - 'scripts/**'
-      - '.github/workflows/deploy-docs.yml'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
+  release:
+    types: [published]
+  workflow_dispatch:
 
 # Required for GitHub Pages deployment from Actions
 permissions:
