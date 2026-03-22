@@ -1,25 +1,55 @@
 # Payload Collection CLI - Specifications & FAQs
 
-## What is the correct behavior for `upsert`, `update`, and `delete` when the lookup field is missing?
+## Command Options and Configuration File
 
-When performing an `upsert`, `update`, or `delete` action, the CLI strictly requires a unique identifier (the `lookupField`) to locate the target record in the database. 
+### CLI Command Options
+The CLI supports the following arguments:
 
-By default, the `lookupField` is `id`. If your JSON or JSONLines data does not contain this field (or the custom field defined in your config), the CLI will deliberately **throw an Error** rather than falling back to creating a new record or modifying unintended records.
+```bash
+npx @payload-cc/payload-collection-cli [-c config-file] <collection-slug> <operation> <file or string>
+```
 
-### Why is this the specification?
-If `upsert` were to silently act as `create` when the identifier is missing, it could easily lead to developers accidentally flooding their database with duplicate records (e.g., if a typo causes the `id` field to be undefined in the provided JSON). Enforcing an explicit Error ensures data integrity, prevents unintended creation of records, and forces the user to explicitly define identifying fields for update operations.
+- `-c`, `--config`: Path to a TypeScript/JavaScript configuration file or an inline JSON string.
 
-### In this context, is it correct to specify the ID in `data.jsonl`?
-Yes. If you intend to `upsert`, `update`, or `delete` a specific record, you **must** include its unique identifier in your input data. 
-If you only intend to create new records and want Payload to auto-generate the IDs, you should use the `create` action instead of `upsert`.
+### Configuration File (`cliConfig`)
+By default, the CLI looks for a named export `cliConfig` or a `default` export in the configuration file.
+
+#### Relation Mappings
+The core of the configuration is the `mappings` object, which allows you to define how relationship fields are resolved.
+
+```typescript
+export const cliConfig = {
+  mappings: {
+    users: {
+      lookupField: 'email', // Search by 'email' instead of 'id'
+      onNotFound: 'error',  // 'error' | 'ignore' | 'create'
+    },
+    categories: {
+      lookupField: 'name',
+      onNotFound: 'create', // Auto-create the category if it doesn't exist
+    },
+    posts: {
+      defaults: {
+        category: 'default', // Inject this value if the field is missing from data
+      },
+    },
+  }
+}
+```
+
+| Mapping Option | Description |
+|----------------|-------------|
+| `lookupField` | The field used to find the target document. Defaults to `id`. |
+| `onNotFound` | Action when a document is not found: `'error'` (default), `'ignore'`, or `'create'`. |
+| `defaults` | An object containing default values to be injected into the record before processing. |
 
 ---
 
-## Configuration
+## Overriding defaults in package.json
 
-### `package.json` Defaults
+You can define default values for any CLI argument in your `package.json`. This is useful for avoiding repetitive flags in a specific project.
 
-You can set defaults for all CLI arguments in your `package.json` under the `payload-collection-cli` key. CLI arguments always override these defaults.
+Add a `payload-collection-cli` field to your `package.json`:
 
 ```json
 {
@@ -35,62 +65,24 @@ You can set defaults for all CLI arguments in your `package.json` under the `pay
 
 | Key | Description | Default |
 |-----|-------------|---------|
-| `config` | Path to the config file (same as `-c` flag) | _(none)_ |
-| `configExportName` | Named export to use from the config file | `cliConfig` |
+| `config` | Path to the config file (equivalent to `-c`) | _(none)_ |
+| `configExportName` | The name of the export to look for in the config file | `cliConfig` |
 | `collection` | Default collection slug | _(none)_ |
-| `action` | Default action (`create`, `upsert`, etc.) | _(none)_ |
-| `input` | Default input file or JSON string | _(none)_ |
+| `action` | Default action (`create`, `upsert`, `update`, `delete`) | _(none)_ |
+| `input` | Default data input (file path or JSON string) | _(none)_ |
 
-With these defaults set, you can run shorthands like:
-```bash
-# Uses all defaults from package.json
-npx @payload-cc/payload-collection-cli
+---
 
-# Override just the action
-npx @payload-cc/payload-collection-cli users create data.jsonl
-```
+## FAQ
 
-### Relation Mappings
+### What is the correct behavior for `upsert`, `update`, and `delete` when the lookup field is missing?
+The CLI strictly requires a unique identifier (the `lookupField`) to locate the target record. If the field is missing from your data, the CLI will **throw an Error**.
 
-By default, Payload relations require you to provide target document IDs (e.g., ObjectIDs or numeric IDs). The CLI can magically resolve these relations by searching for human-readable fields instead.
+**Why?**
+To prevent accidental data corruption or duplicate records. If an `upsert` silently created a new record when the identifier was missing (e.g., due to a typo), it could result in thousands of duplicate entries. Enforcing an error ensures that you are explicitly identifying the records you intend to modify.
 
-**Example Scenario**:
-Assume your `posts` collection has a relationship field named `author` that references the `users` collection. Instead of manually finding and hard-coding the user's database ID, you want to simply provide their email address.
-
-Create a config file and pass it via `-c`:
-
-```typescript
-// payload-collection-cli.config.ts
-export const cliConfig = {
-  mappings: {
-    users: {
-      lookupField: 'email',
-      onNotFound: 'error',
-    },
-    categories: {
-      lookupField: 'name',
-      onNotFound: 'create', // Auto-create if not found
-    },
-    posts: {
-      defaults: {
-        category: 'default', // Inject default value when field is missing
-      },
-    },
-  }
-}
-```
-
-| Mapping Option | Description |
-|----------------|-------------|
-| `lookupField` | Field to search by instead of `id` |
-| `onNotFound` | `'error'` to throw, `'ignore'` to skip, `'create'` to auto-create |
-| `defaults` | Object of field defaults injected when values are missing from data |
-
-Now, when you supply an `author: "user@example.com"` property to a `posts` collection insertion, the CLI will intercept this relationship, look up the `users` collection by the `email` field, and automatically replace the email string with the actual database ID before inserting!
-
-### Config File Cross-Imports
-
-Since the config file is loaded via `jiti` (a TypeScript-aware runtime loader), you can import constants from other project files:
+### Can I include imports in my configuration file?
+Yes! Since the configuration is loaded using `jiti`, you can use standard TypeScript/ESM imports to reference constants or logic from your Payload project.
 
 ```typescript
 import { DEFAULT_CATEGORY_NAME } from './src/constants';
@@ -103,5 +95,7 @@ export const cliConfig = {
   }
 }
 ```
+**Note:** Imports are resolved relative to the location of the configuration file itself.
 
-Imports are resolved relative to the config file's own location.
+### Should I specify the ID in my data files?
+If you are using `upsert`, `update`, or `delete` and have not configured a custom `lookupField`, then **yes**, you must provide the `id`. If you are using `create`, Payload will automatically generate the ID for you.
