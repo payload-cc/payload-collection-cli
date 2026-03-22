@@ -15,6 +15,12 @@ pnpm add @payload-cc/payload-collection-cli
 
 You can immediately start using the commands without any configuration for basic insertions/updates!
 
+**Command Syntax**:
+```bash
+npx @payload-cc/payload-collection-cli [-c config-file] <collection-slug> <operation> <file or string>
+```
+
+**Examples**:
 ```bash
 # Bulk create/upsert from jsonlines
 npx @payload-cc/payload-collection-cli posts upsert data.jsonl
