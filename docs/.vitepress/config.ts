@@ -20,6 +20,7 @@ export default defineConfig({
               const rootDir = process.cwd()
               const pages = [
                 'README.md',
+                'docs/examples.md',
                 'docs/references/specs_detail.md'
               ]
               
@@ -47,6 +48,7 @@ export default defineConfig({
         text: 'Introduction',
         items: [
           { text: 'What is this?', link: '/' },
+          { text: 'Examples & Use Cases', link: '/examples' },
           { text: 'AI Coding Context', link: '/ai' },
         ]
       },
