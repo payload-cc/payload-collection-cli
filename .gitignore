@@ -1,5 +1,7 @@
+e2e-tests/_payload/
+.vitepress/dist/
+.vitepress/cache/
 node_modules/
 dist/
-*.tgz
-.env
-e2e-tests/_payload/
+/docs/.vitepress/dist/
+/docs/.vitepress/cache/
