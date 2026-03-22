@@ -12,7 +12,9 @@
 </p>
 
 <p align="center">
-  <a href="https://payload-cc.github.io/payload-collection-cli/"><strong>Explore the Documentation »</strong></a>
+  🚀 <strong><a href="https://payload-cc.github.io/payload-collection-cli/">Official Guide</a></strong>
+  &nbsp;&nbsp;•&nbsp;&nbsp;
+  🤖 <strong><a href="https://payload-cc.github.io/payload-collection-cli/ai.html">AI Context Page</a></strong>
 </p>
 
 ---
@@ -28,11 +30,6 @@ Payload 3.0 is powerful, but performing simple data operations often requires wr
 - 📄 **Batch Processing:** Support for both JSON strings and JSONLines (`.jsonl`) files.
 - ⚙️ **Configurable:** Define your lookup logic in a simple external config.
 - 🛡 **Native Performance:** Uses Local API to ensure all Hooks and Validations run.
-
-## 📖 Documentation
-
-- **🚀 [Official Guide](https://payload-cc.github.io/payload-collection-cli/)**
-- **🤖 [AI Context Page](https://payload-cc.github.io/payload-collection-cli/ai.html)** (One-file summary for coding agents)
 
 ## Installation
 
