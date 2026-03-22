@@ -19,7 +19,6 @@ export default defineConfig({
     }
   },
   themeConfig: {
-    logo: '/logo.png',
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Specs', link: '/references/specs_detail' },
