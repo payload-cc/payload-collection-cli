@@ -2,17 +2,17 @@
 
 ## Command Options
 
-### CLI Syntax
-```bash
-npx @payload-cc/payload-collection-cli [-c config-file] [-n export-name] <collection-slug> <operation> <file or string>
-```
-
 The following options can be set either via CLI flags or as defaults in your `package.json`. Note that positional arguments (`collection-slug`, `operation`, `file or string`) are **mandatory** and cannot be defaulted via `package.json`.
 
 | CLI Option (Short/Long) | `package.json` Key | Default | Description |
 |-------------------------|-------------------|---------|-------------|
 | `-c`, `--config-file` | `configFile` | _(none)_ | Path to a configuration file or an inline JSON string. |
 | `-n`, `--config-export-name` | `configExportName` | `cliConfig` | The name of the export to use from the configuration file. |
+
+### CLI Syntax
+```bash
+npx @payload-cc/payload-collection-cli [-c config-file] [-n export-name] <collection-slug> <operation> <file or string>
+```
 
 ### Overriding defaults in package.json
 
