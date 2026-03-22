@@ -11,7 +11,6 @@ export const cliConfig = {
       onNotFound: 'create' // Auto-create category if it doesn't exist
     },
     posts: {
-      lookupField: 'title',
       defaults: {
         category: DEFAULT_CATEGORY_NAME // Injected from shared constants!
       }

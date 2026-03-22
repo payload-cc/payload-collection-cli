@@ -20,7 +20,7 @@ describe('Relation auto-resolution', () => {
     const dataPath = path.resolve(__dirname, 'data.jsonl');
     const configPath = path.resolve(__dirname, 'config.ts');
     
-    const output = runCLI(`-c ${configPath} posts upsert ${dataPath}`);
+    const output = runCLI(`-c ${configPath} posts create ${dataPath}`);
     expect(output).toContain('Operation successful');
 
     const users = getCollectionData('users');
