@@ -12,8 +12,8 @@ describe('Relation auto-resolution', () => {
     // the CLI config auto-resolves explicit relationships (e.g. mapping `author` email directly to `Users.id`).
 
     // 1. Preparation: Upsert the author
-    const userDataPath = path.resolve(__dirname, '..', 'success-mapping-upsert', 'data.jsonl');
-    const userConfigPath = path.resolve(__dirname, '..', 'success-mapping-upsert', 'config.ts');
+    const userDataPath = path.resolve(__dirname, '..', '120-success-mapping-upsert', 'data.jsonl');
+    const userConfigPath = path.resolve(__dirname, '..', '120-success-mapping-upsert', 'config.ts');
     runCLI(`-c ${userConfigPath} users upsert ${userDataPath}`);
 
     // 2. Main Execution: Upsert the Post referencing the author by their email string

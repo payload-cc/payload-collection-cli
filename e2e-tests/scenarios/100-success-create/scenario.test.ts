@@ -17,7 +17,7 @@ describe('Success Create', () => {
     // runCLI returns the string output of the command
     const output = runCLI(`users create ${dataFile}`);
 
-    expect(output).toContain('✔ Successfully processed 1 records');
+    expect(output).toContain('Operation successful');
 
     const users = getCollectionData('users');
     expect(users).toHaveLength(1);
