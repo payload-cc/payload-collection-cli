@@ -8,7 +8,7 @@ import { hideBin } from 'yargs/helpers';
 import { z } from 'zod';
 import { execute } from './executor';
 
-const jiti = createJiti(import.meta.url);
+const jiti = createJiti(import.meta.url, { moduleCache: false, fsCache: false });
 
 const MappingConfigSchema = z.object({
   lookupField: z.string().default('id'),
@@ -49,9 +49,6 @@ async function run() {
     .help()
     .parse();
 
-  console.log('📊 Parsed arguments:', JSON.stringify(argv, null, 2));
-
-  // Positional arguments are in argv._
   const { configFile, configJson, configExportName, _: [collection, action, input] } = argv as any;
 
   let rawConfig: any = { mappings: {} };
@@ -93,7 +90,6 @@ async function run() {
   const cliConfig = validation.data;
 
   // Auto-discover payload.config
-  console.log('🔍 Discovering payload.config...');
   const configPath = [
     path.resolve(root, 'src/payload.config.ts'),
     path.resolve(root, 'payload.config.ts'),
@@ -103,12 +99,8 @@ async function run() {
     console.error('❌ Error: payload.config.ts not found.');
     process.exit(1);
   }
-  console.log(`📖 Loading payload config from: ${configPath}`);
 
   const { default: payloadConfig } = await jiti.import(configPath) as any;
-  console.log('⚙️ Payload config loaded');
-
-  console.log('🚀 Connecting to Payload...');
   const payload = await getPayload({ config: payloadConfig });
   console.log('✅ Connected to Payload');
   
