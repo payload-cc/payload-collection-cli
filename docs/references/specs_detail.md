@@ -1,16 +1,5 @@
 # Payload Collection CLI - Specifications & FAQs
 
-## Global Configuration Options
-
-The following options can be set either via CLI flags or as defaults in your `package.json`.
-
-| CLI Option (Short/Long) | `package.json` Key | Description | Default |
-|-------------------------|-------------------|-------------|---------|
-| `-c`, `--config-file` | `configFile` | Path to a configuration file or an inline JSON string. | _(none)_ |
-| `-n`, `--config-export-name` | `configExportName` | The name of the export to use from the configuration file. | `cliConfig` |
-
----
-
 ## Command Options
 
 ### CLI Syntax
@@ -18,13 +7,16 @@ The following options can be set either via CLI flags or as defaults in your `pa
 npx @payload-cc/payload-collection-cli [-c config-file] [-n export-name] <collection-slug> <operation> <file or string>
 ```
 
-Note that positional arguments (`collection-slug`, `operation`, `file or string`) are **mandatory** and cannot be defaulted via `package.json`.
+The following options can be set either via CLI flags or as defaults in your `package.json`. Note that positional arguments (`collection-slug`, `operation`, `file or string`) are **mandatory** and cannot be defaulted via `package.json`.
 
----
+| CLI Option (Short/Long) | `package.json` Key | Default | Description |
+|-------------------------|-------------------|---------|-------------|
+| `-c`, `--config-file` | `configFile` | _(none)_ | Path to a configuration file or an inline JSON string. |
+| `-n`, `--config-export-name` | `configExportName` | `cliConfig` | The name of the export to use from the configuration file. |
 
-## Overriding defaults in package.json
+### Overriding defaults in package.json
 
-You can define default values for CLI **options** in your `package.json` under the `payload-collection-cli` key.
+To use defaults, add a `payload-collection-cli` field to your `package.json`:
 
 ```json
 {
@@ -64,11 +56,11 @@ export const cliConfig = {
 }
 ```
 
-| Mapping Option | Description | Default |
-|----------------|-------------|---------|
-| `lookupField` | The field used to find the target document. | `id` |
-| `onNotFound` | Action when a document is not found (`'error'`, `'ignore'`, `'create'`). | `'error'` |
-| `defaults` | Default values injected into the record before processing. | _(none)_ |
+| Mapping Option | Default | Description |
+|----------------|---------|-------------|
+| `lookupField` | `id` | The field used to find the target document. |
+| `onNotFound` | `'error'` | Action when a document is not found (`'error'`, `'ignore'`, `'create'`). |
+| `defaults` | _(none)_ | Default values injected into the record before processing. |
 
 ---
 
