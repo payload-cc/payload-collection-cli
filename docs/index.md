@@ -1,21 +1,25 @@
 ---
 layout: home
 hero:
-  name: Payload Collection CLI
-  text: Functional CLI for Payload 3.0 collection management
-  tagline: Seamless data synchronization and relation resolution for Payload CMS.
+  name: payload-collection-cli
+  text: Manage collections without writing boilerplate scripts.
+  tagline: The missing CLI for Payload 3.0. Turn your terminal into a direct interface for your collections.
   actions:
-    - theme: brand
+    - theme: alt
       text: Get Started
       link: /references/specs_detail
-    - theme: alt
+    - theme: brand
       text: AI Context
       link: /ai
 features:
-  - title: Zod Validation
-    details: Type-safe configuration and runtime data validation.
-  - title: Relation Resolution
-    details: Auto-resolve relationships via slug, email, or other lookup fields.
-  - title: Upsert Support
-    details: Smart data synchronization with existing records.
+  - title: ⚡️ Zero Scripting
+    details: Run CRUD operations directly from your terminal.
+  - title: 🔍 Relation Lookup
+    details: Resolve relationships using name, email, or slug.
+  - title: 📄 Batch Processing
+    details: Support for both JSON strings and JSONLines (.jsonl) files.
+  - title: ⚙️ Configurable
+    details: Define your lookup logic in a simple external config.
+  - title: 🛡 Native Performance
+    details: Uses Local API to ensure all Hooks and Validations run.
 ---

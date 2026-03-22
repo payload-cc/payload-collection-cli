@@ -93,15 +93,22 @@ async function run() {
   const cliConfig = validation.data;
 
   // Auto-discover payload.config
+  console.log('🔍 Discovering payload.config...');
   const configPath = [
     path.resolve(root, 'src/payload.config.ts'),
     path.resolve(root, 'payload.config.ts'),
   ].find(p => fs.existsSync(p));
 
-  if (!configPath) throw new Error('payload.config.ts not found.');
+  if (!configPath) {
+    console.error('❌ Error: payload.config.ts not found.');
+    process.exit(1);
+  }
+  console.log(`📖 Loading payload config from: ${configPath}`);
 
   const { default: payloadConfig } = await jiti.import(configPath) as any;
+  console.log('⚙️ Payload config loaded');
 
+  console.log('🚀 Connecting to Payload...');
   const payload = await getPayload({ config: payloadConfig });
   console.log('✅ Connected to Payload');
   

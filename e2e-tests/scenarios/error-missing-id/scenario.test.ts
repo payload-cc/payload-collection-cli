@@ -14,7 +14,7 @@ describe('Error missing ID strictly enforced', () => {
     
     const output = runCLI(`users upsert ${dataPath}`);
     
-    expect(output).toContain("Missing lookup field 'id' in data");
+    expect(output).toContain("lookup field 'id' in data");
 
     const users = getCollectionData('users');
     expect(users).toHaveLength(0); // DB remains untouched

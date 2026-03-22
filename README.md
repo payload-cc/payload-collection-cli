@@ -1,8 +1,25 @@
 # payload-collection-cli
 
-Functional CLI for Payload 3.0 collection management.
+**The missing CLI for Payload 3.0. Manage collections without writing boilerplate scripts.**
 
-Allows for magical, easy-to-use bulk imports, updates, deletions and operations on Payload CMS collections using simple JSONLines or JSON files, with automatic relation resolution.
+---
+
+## Why?
+
+Payload 3.0 is powerful, but performing simple data operations often requires writing one-off scripts. **payload-collection-cli** turns your terminal into a direct interface for your collections, supporting intelligent relation lookups by name/slug instead of cryptic IDs.
+
+## Features
+
+- ⚡️ **Zero Scripting:** Run CRUD operations directly from your terminal.
+- 🔍 **Relation Lookup:** Resolve relationships using `name`, `email`, or `slug`.
+- 📄 **Batch Processing:** Support for both JSON strings and JSONLines (`.jsonl`) files.
+- ⚙️ **Configurable:** Define your lookup logic in a simple external config.
+- 🛡 **Native Performance:** Uses Local API to ensure all Hooks and Validations run.
+
+## 📖 Documentation
+
+- **🚀 [Official Guide](https://payload-cc.github.io/payload-collection-cli/)**
+- **🤖 [AI Context Page](https://payload-cc.github.io/payload-collection-cli/ai.html)** (One-file summary for coding agents)
 
 ## Installation
 
