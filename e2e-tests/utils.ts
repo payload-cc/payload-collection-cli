@@ -31,14 +31,14 @@ export function resetDatabase() {
   }
 }
 
-export function getUsers() {
+export function getCollectionData(collection: string) {
   const scriptContent = `
 import { getPayload } from 'payload';
 import configPromise from './src/payload.config';
 async function run() {
   const payload = await getPayload({ config: await configPromise });
-  const users = await payload.find({ collection: 'users' });
-  console.log(JSON.stringify(users.docs));
+  const docs = await payload.find({ collection: '${collection}' });
+  console.log(JSON.stringify(docs.docs));
   process.exit(0);
 }
 run();

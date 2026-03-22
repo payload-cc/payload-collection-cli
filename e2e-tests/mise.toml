@@ -8,6 +8,9 @@ npx -y create-payload-app@latest -n _payload -t blank --db sqlite --no-deps
 # Fallback rename just in case it creates 'payload' instead of '_payload'
 if [ -d "payload" ]; then mv payload _payload; fi
 cd _payload
+mkdir -p src/collections
+cp ../fixtures/Posts.ts src/collections/Posts.ts
+cp ../fixtures/payload.config.ts src/payload.config.ts
 pnpm install
 """
 

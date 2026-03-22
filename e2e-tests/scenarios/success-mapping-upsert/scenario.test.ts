@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { runCLI, resetDatabase, getUsers } from '../../utils';
+import { runCLI, resetDatabase, getCollectionData } from '../../utils';
 import path from 'path';
 
 describe('Success: Mapping Upsert', () => {
@@ -14,7 +14,7 @@ describe('Success: Mapping Upsert', () => {
     const output = runCLI(`-c ${configPath} users upsert ${dataPath}`);
     expect(output).toContain('Operation successful');
 
-    const users = getUsers();
+    const users = getCollectionData('users');
     expect(users).toHaveLength(2);
     const emails = users.map((u: any) => u.email);
     expect(emails).toContain('alice@example.com');
