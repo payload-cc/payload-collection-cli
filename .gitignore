@@ -3,3 +3,6 @@ dist/
 *.tgz
 .env
 e2e-tests/_payload/
+docs/ai.md
+docs/.vitepress/dist/
+docs/.vitepress/cache/
