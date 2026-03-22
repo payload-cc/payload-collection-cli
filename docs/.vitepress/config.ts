@@ -103,6 +103,7 @@ export default defineConfig({
 
 								return output.trim();
 							})
+							.filter(Boolean)
 							.join("\n\n<hr />\n\n");
 					});
 				}
