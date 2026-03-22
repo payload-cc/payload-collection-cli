@@ -11,8 +11,11 @@ const referencesDir = path.join(docsDir, 'references');
 const aiFile = path.join(docsDir, 'ai.md');
 
 function generate() {
-  const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf-8');
+  let readme = fs.readFileSync(path.join(root, 'README.md'), 'utf-8');
   const specs = fs.readFileSync(path.join(referencesDir, 'specs_detail.md'), 'utf-8');
+
+  // Transform links like (docs/references/...) to (/references/...) for VitePress ai.md
+  readme = readme.replace(/\(docs\//g, '(/');
 
   const content = `---
 editLink: false
