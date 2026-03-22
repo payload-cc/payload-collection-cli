@@ -13,7 +13,7 @@ pnpm add @payload-cc/payload-collection-cli
 
 ## Quick Start
 
-You can immediately start using the commands without any configuration!
+You can immediately start using the commands without any configuration for basic insertions/updates!
 
 ```bash
 # Bulk create/upsert from jsonlines
@@ -21,6 +21,9 @@ npx @payload-cc/payload-collection-cli posts upsert data.jsonl
 
 # Simple JSON update
 npx @payload-cc/payload-collection-cli users update '{"email": "user@example.com", "name": "New Name"}'
+
+# With explicit mapping configuration
+npx @payload-cc/payload-collection-cli -c ./my-map.config.ts users upsert data.jsonl
 ```
 
 ## Available Actions

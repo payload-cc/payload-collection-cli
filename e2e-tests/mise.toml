@@ -12,14 +12,12 @@ pnpm install
 """
 
 [tasks.test]
-description = "Test the upsert command on the dummy Payload app"
+description = "Run all E2E test scenarios within the _payload app context"
 run = """
 #!/usr/bin/env bash
 set -e
 echo "Building the CLI before test..."
 pnpm --dir ../ build
-cd _payload
-cp ../payload-collection-cli.config.ts .
-export $(grep -v '^#' .env | xargs)
-node ../../dist/bin.js users upsert ../data.jsonl
+echo "Running E2E tests via vitest..."
+pnpm --dir ../ test:e2e
 """
