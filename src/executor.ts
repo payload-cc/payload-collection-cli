@@ -15,12 +15,14 @@ async function processSingle(payload: Payload, collection: string, action: Actio
     case 'create':
       return await payload.create({ collection: collection as any, data: resolved });
     case 'upsert':
-      const existing = await payload.find({
-        collection: collection as any,
-        where: { [lookupField]: { equals: data[lookupField] } },
-      });
-      if (existing.docs.length > 0) {
-        return await payload.update({ collection: collection as any, id: existing.docs[0].id, data: resolved });
+      if (data[lookupField] !== undefined) {
+        const existing = await payload.find({
+          collection: collection as any,
+          where: { [lookupField]: { equals: data[lookupField] } },
+        });
+        if (existing.docs.length > 0) {
+          return await payload.update({ collection: collection as any, id: existing.docs[0].id, data: resolved });
+        }
       }
       return await payload.create({ collection: collection as any, data: resolved });
     case 'update':
