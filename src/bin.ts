@@ -14,18 +14,28 @@ async function run() {
   let cliConfig = { mappings: {} };
   if (configOptIdx !== -1) {
     if (args.length <= configOptIdx + 1) {
-      console.error('❌ Error: Missing path after --config option.');
+      console.error('❌ Error: Missing option after --config parameter.');
       process.exit(1);
     }
-    const customConfigPath = path.resolve(process.cwd(), args[configOptIdx + 1]);
-    if (!require('fs').existsSync(customConfigPath)) {
-      console.error(`❌ Error: Config file not found at ${customConfigPath}`);
-      process.exit(1);
-    }
-    const imported = await jiti.import(customConfigPath) as any;
-    cliConfig = imported.cliConfig || imported.default || cliConfig;
-
+    const val = args[configOptIdx + 1];
     args.splice(configOptIdx, 2);
+
+    if (val.trim().startsWith('{')) {
+      try {
+        cliConfig = JSON.parse(val);
+      } catch (err) {
+        console.error('❌ Error: Failed to parse inline JSON config:', err);
+        process.exit(1);
+      }
+    } else {
+      const customConfigPath = path.resolve(process.cwd(), val);
+      if (!require('fs').existsSync(customConfigPath)) {
+        console.error(`❌ Error: Config file not found at ${customConfigPath}`);
+        process.exit(1);
+      }
+      const imported = await jiti.import(customConfigPath) as any;
+      cliConfig = imported.cliConfig || imported.default || cliConfig;
+    }
   }
 
   const [collection, action, input] = args;
