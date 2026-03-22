@@ -13,6 +13,7 @@ async function processSingle(payload: Payload, collection: string, action: Actio
 
   switch (action) {
     case 'create':
+      console.log(`📝 [executor] Creating record in "${collection}" with resolved data:`, JSON.stringify(resolved, null, 2));
       return await payload.create({ collection: collection as any, data: resolved });
     case 'upsert':
       if (data[lookupField] === undefined) {

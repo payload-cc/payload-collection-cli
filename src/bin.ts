@@ -47,7 +47,9 @@ async function run() {
     .pkgConf('payload-collection-cli')
     .demandCommand(3, 'Collection slug, operation, and input are required.')
     .help()
-    .parse();
+    .parseSync();
+
+  console.log('📊 Parsed arguments:', JSON.stringify(argv, null, 2));
 
   const { configFile, configJson, configExportName, _: [collection, action, input] } = argv as any;
 
@@ -99,6 +101,7 @@ async function run() {
     console.error('❌ Error: payload.config.ts not found.');
     process.exit(1);
   }
+  console.log(`📖 Loading payload config from: ${configPath}`);
 
   const { default: payloadConfig } = await jiti.import(configPath) as any;
   const payload = await getPayload({ config: payloadConfig });
