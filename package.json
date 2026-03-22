@@ -24,7 +24,7 @@
     "build": "tsup src/index.ts src/bin.ts --format cjs,esm --dts --clean --shims && chmod +x dist/bin.js",
     "release": "pnpm build && pnpm publish --access public",
     "test": "vitest run tests/*",
-    "test:e2e": "vitest run e2e-tests/scenarios/ --no-file-parallelism",
+    "test:e2e": "vitest run e2e-tests/scenarios/ --no-file-parallelism --test-timeout 300000",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"

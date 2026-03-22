@@ -14,7 +14,7 @@ export function runCLI(args: string) {
     // Determine if we are on a system where export $(...) works. 
     // Otherwise, we fallback to a safer method.
     const envCmd = process.platform === 'win32' ? '' : 'export $(grep -v "^#" .env | xargs) && ';
-    const command = `NODE_OPTIONS="--max-old-space-size=4096" ${envCmd}node ${cliBin} ${args}`;
+    const command = `NODE_OPTIONS="--max-old-space-size=4096" ${envCmd}npx tsx ${cliBin} ${args}`;
     
     return execSync(command, {
       cwd: payloadAppDir,
