@@ -33,6 +33,37 @@ export default defineConfig({
                 .replace(/\(docs\//g, '(/')
             })
           }
+
+          if (env.path && env.path.endsWith('examples.md')) {
+            // Automatically scan e2e scenarios and generate examples
+            src = src.replace('[[SCENARIO_EXAMPLES_BUNDLE]]', () => {
+              const scenariosDir = path.resolve(process.cwd(), 'e2e-tests/scenarios')
+              if (!fs.existsSync(scenariosDir)) return ''
+              
+              const scenarios = fs.readdirSync(scenariosDir)
+                .filter(name => fs.statSync(path.join(scenariosDir, name)).isDirectory())
+                .sort()
+
+              return scenarios.map(name => {
+                const scenarioPath = path.join(scenariosDir, name)
+                const title = name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+                
+                let output = `## ${title}\n\n`
+                
+                const dataPath = path.join(scenarioPath, 'data.jsonl')
+                if (fs.existsSync(dataPath)) {
+                  output += `### Data (\`data.jsonl\`)\n\`\`\`jsonline\n${fs.readFileSync(dataPath, 'utf-8')}\n\`\`\`\n\n`
+                }
+
+                const configPath = path.join(scenarioPath, 'config.ts')
+                if (fs.existsSync(configPath)) {
+                  output += `### Configuration (\`config.ts\`)\n\`\`\`typescript\n${fs.readFileSync(configPath, 'utf-8')}\n\`\`\`\n\n`
+                }
+                
+                return output + '---\n'
+              }).join('\n\n')
+            })
+          }
           return originalRender.call(this, src, env);
         };
       }
