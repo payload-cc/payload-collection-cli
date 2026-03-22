@@ -38,9 +38,9 @@ npx @payload-cc/payload-collection-cli -c ./my-map.config.ts users upsert data.j
 - `delete`: Delete records.
 - `upsert`: Update if existing, create if not.
 
-## Configuration & Specifications
+## Specifications & FAQ
 
-For detailed configuration options (including `package.json` defaults, relation mappings, `onNotFound` behaviors, and cross-file imports), please refer to the [Specifications & Configuration Guide](docs/references/specs_detail.md).
+For detailed configuration options (including `package.json` defaults, relation mappings, `onNotFound` behaviors, and cross-file imports), please refer to the [Specifications & FAQ](docs/references/specs_detail.md).
 
 ## Development & CI/CD
 
