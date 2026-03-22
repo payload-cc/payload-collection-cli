@@ -11,6 +11,7 @@ cd _payload
 mkdir -p src/collections
 cp ../payload-template/Posts.ts src/collections/Posts.ts
 cp ../payload-template/Categories.ts src/collections/Categories.ts
+cp ../payload-template/constants.ts src/constants.ts
 cp ../payload-template/payload.config.ts src/payload.config.ts
 pnpm install
 """

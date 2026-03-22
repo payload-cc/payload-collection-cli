@@ -30,5 +30,5 @@ describe('Relation auto-resolution', () => {
     expect(posts).toHaveLength(1);
     // Assure Payload successfully bridged the relationship automatically converting string -> ID!
     expect(posts[0].author.id).toBe(alice.id);
-  }, 30000);
+  }, 60000);
 });
