@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitepress'
+import fs from 'node:fs'
+import path from 'node:path'
 
 export default defineConfig({
   title: "Payload Collection CLI",
@@ -7,17 +9,28 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/payload-collection-cli/logo.png' }]
   ],
-  markdown: {
-    config: (md) => {
-      const originalRender = md.render;
-      md.render = function (this: any, src, env) {
-        if (env.path && env.path.endsWith('ai.md')) {
-          src = src.replace(/\(docs\//g, '(/');
-        }
-        return originalRender.call(this, src, env);
-      };
-    }
-  },
+    markdown: {
+      config: (md) => {
+        // Internal rule to bundle documentation into ai.md during compilation
+        const originalRender = md.render;
+        md.render = function (this: any, src, env) {
+          if (env.path && env.path.endsWith('ai.md')) {
+            // Find placeholder and replace with resolved content
+            src = src.replace('[[AI_CONTEXT_BUNDLE]]', () => {
+              const rootDir = path.resolve(process.cwd())
+              const readmePath = path.resolve(rootDir, 'README.md')
+              const specsPath = path.resolve(rootDir, 'docs/references/specs_detail.md')
+              
+              const readme = fs.existsSync(readmePath) ? fs.readFileSync(readmePath, 'utf-8') : ''
+              const specs = fs.existsSync(specsPath) ? fs.readFileSync(specsPath, 'utf-8') : ''
+              
+              return `${readme}\n\n---\n\n${specs}`.replace(/\(docs\//g, '(/')
+            })
+          }
+          return originalRender.call(this, src, env);
+        };
+      }
+    },
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
