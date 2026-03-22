@@ -1,6 +1,11 @@
 # Payload Collection CLI - Specifications & FAQs
 
-## Command Options
+## CLI Syntax
+```bash
+npx @payload-cc/payload-collection-cli [options] <collection-slug> <operation> <file or string>
+```
+
+### Command Options
 
 The following options can be set either via CLI flags or as defaults in your `package.json`. Note that positional arguments (`collection-slug`, `operation`, `file or string`) are **mandatory** and cannot be defaulted via `package.json`.
 
@@ -9,11 +14,6 @@ The following options can be set either via CLI flags or as defaults in your `pa
 | `-c`, `--config-file` | `configFile` | _(none)_ | Path to a configuration file (named export required). |
 | `-j`, `--config-json` | `configJson` | _(none)_ | Inline JSON string for configuration. Takes precedence over `configFile`. |
 | `-n`, `--config-export-name` | `configExportName` | `cliConfig` | The name of the export to use from the configuration file. |
-
-### CLI Syntax
-```bash
-npx @payload-cc/payload-collection-cli [options] <collection-slug> <operation> <file or string>
-```
 
 ### Overriding defaults in package.json
 
@@ -31,7 +31,7 @@ To use defaults, add a `payload-collection-cli` field to your `package.json`:
 
 ---
 
-## Configuration File (`cliConfig`)
+## Configuration (`cliConfig`)
 
 The CLI strictly looks for a **named export** in the configuration file (defaulting to `cliConfig`). **Default exports are not supported.**
 
