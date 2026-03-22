@@ -1,0 +1,21 @@
+[tasks.init]
+description = "Initialize a dummy Payload application for E2E testing"
+run = """
+#!/usr/bin/env bash
+rm -rf _payload
+npx -y create-payload-app@latest _payload -t blank --db sqlite --no-deps
+cd _payload
+pnpm install
+pnpm add file:../../
+"""
+
+[tasks.test]
+description = "Test the upsert command on the dummy Payload app"
+run = """
+#!/usr/bin/env bash
+echo "Building the CLI before test..."
+pnpm --dir ../ build
+cd _payload
+export $(grep -v '^#' .env | xargs)
+node ../../dist/bin.js users upsert ../data.jsonl
+"""

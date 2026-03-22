@@ -15,26 +15,34 @@ async function processSingle(payload: Payload, collection: string, action: Actio
     case 'create':
       return await payload.create({ collection: collection as any, data: resolved });
     case 'upsert':
-      if (data[lookupField] !== undefined) {
-        const existing = await payload.find({
-          collection: collection as any,
-          where: { [lookupField]: { equals: data[lookupField] } },
-        });
-        if (existing.docs.length > 0) {
-          return await payload.update({ collection: collection as any, id: existing.docs[0].id, data: resolved });
-        }
+      if (data[lookupField] === undefined) {
+        throw new Error(`[upsert] Missing lookup field '${lookupField}' in data. Cannot perform upsert.`);
+      }
+      const existingUpsert = await payload.find({
+        collection: collection as any,
+        where: { [lookupField]: { equals: data[lookupField] } },
+      });
+      if (existingUpsert.docs.length > 0) {
+        return await payload.update({ collection: collection as any, id: existingUpsert.docs[0].id, data: resolved });
       }
       return await payload.create({ collection: collection as any, data: resolved });
     case 'update':
+      if (data[lookupField] === undefined) {
+        throw new Error(`[update] Missing lookup field '${lookupField}' in data. Cannot perform update.`);
+      }
       return await payload.update({
         collection: collection as any,
         where: { [lookupField]: { equals: data[lookupField] } },
         data: resolved,
       });
     case 'delete':
+      const delVal = typeof data === 'object' ? data[lookupField] : data;
+      if (delVal === undefined) {
+        throw new Error(`[delete] Missing lookup field '${lookupField}' in action. Cannot perform delete.`);
+      }
       return await payload.delete({
         collection: collection as any,
-        where: { [lookupField]: { equals: typeof data === 'object' ? data[lookupField] : data } },
+        where: { [lookupField]: { equals: delVal } },
       });
     default:
       throw new Error(`Unsupported action: ${action}`);

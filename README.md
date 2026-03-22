@@ -29,6 +29,9 @@ npx @payload-cc/payload-collection-cli users update '{"email": "user@example.com
 - `delete`: Delete records.
 - `upsert`: Update if existing, create if not.
 
+## Specifications & FAQ
+For detailed behavior specifications (such as how identifier lookups work strictly during upserts, updates, and deletes), please refer to the [Specifications & FAQ](docs/references/specs_detail.md).
+
 ## Configuration (Optional)
 
 ### Relation Mappings (`payload-collection-cli.config.ts`)
