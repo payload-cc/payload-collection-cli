@@ -3,3 +3,4 @@ dist/
 *.tgz
 .env
 e2e-tests/_payload/
+docs/ai.md
