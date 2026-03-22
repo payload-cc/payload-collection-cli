@@ -6,8 +6,8 @@ The following options can be set either via CLI flags or as defaults in your `pa
 
 | CLI Option (Short/Long) | `package.json` Key | Default | Description |
 |-------------------------|-------------------|---------|-------------|
-| `-j`, `--config-json` | `configJson` | _(none)_ | Inline JSON string for configuration. Takes precedence over `configFile`. |
 | `-c`, `--config-file` | `configFile` | _(none)_ | Path to a configuration file (named export required). |
+| `-j`, `--config-json` | `configJson` | _(none)_ | Inline JSON string for configuration. Takes precedence over `configFile`. |
 | `-n`, `--config-export-name` | `configExportName` | `cliConfig` | The name of the export to use from the configuration file. |
 
 ### CLI Syntax
