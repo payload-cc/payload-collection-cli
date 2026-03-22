@@ -4,7 +4,7 @@ run = """
 #!/usr/bin/env bash
 set -e
 rm -rf _payload payload
-npx -y create-payload-app@latest -n _payload -t blank --db sqlite --no-deps
+npx -y create-payload-app@latest -n _payload -t blank --db sqlite --no-deps --db-accept-recommended
 # Fallback rename just in case it creates 'payload' instead of '_payload'
 if [ -d "payload" ]; then mv payload _payload; fi
 cd _payload
