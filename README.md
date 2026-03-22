@@ -17,7 +17,7 @@ You can immediately start using the commands without any configuration for basic
 
 **Command Syntax**:
 ```bash
-npx @payload-cc/payload-collection-cli [-c config-file] [-n export-name] <collection-slug> <operation> <file or string>
+npx @payload-cc/payload-collection-cli [options] <collection-slug> <operation> <file or string>
 ```
 
 **Examples**:

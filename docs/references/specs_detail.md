@@ -11,7 +11,7 @@ The following options can be set either via CLI flags or as defaults in your `pa
 
 ### CLI Syntax
 ```bash
-npx @payload-cc/payload-collection-cli [-c config-file] [-n export-name] <collection-slug> <operation> <file or string>
+npx @payload-cc/payload-collection-cli [options] <collection-slug> <operation> <file or string>
 ```
 
 ### Overriding defaults in package.json

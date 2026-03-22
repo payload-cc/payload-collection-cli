@@ -92,7 +92,7 @@ async function run() {
   const [collection, action, input] = args;
 
   if (!collection || !action || !input) {
-    console.log('Usage: payload-collection-cli [-c configFile] [-n exportName] <collection> <action> <json|file.jsonl>');
+    console.log('Usage: payload-collection-cli [options] <collection-slug> <operation> <file or string>');
     process.exit(1);
   }
 
