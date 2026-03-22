@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Payload Collection CLI",
   description: "Functional CLI for Payload 3.0 collection management",
+  base: '/payload-collection-cli/',
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
