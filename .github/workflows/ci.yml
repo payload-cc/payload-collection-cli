@@ -27,5 +27,10 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test
-      - run: pnpm build
+      - name: Ensure Project Build
+        run: pnpm build
+      
+      - name: Run E2E Initialization and Tests (via Mise)
+        run: |
+          cd e2e-tests
+          mise run test
