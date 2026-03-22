@@ -59,3 +59,16 @@ run();
   } catch (err) {}
   return [];
 }
+
+/**
+ * Executes a callback with a temporary file that is automatically cleaned up.
+ */
+export function withTempFile<T>(filename: string, content: string, callback: (filepath: string) => T): T {
+  const filepath = path.join(e2eDir, 'scenarios', filename);
+  fs.writeFileSync(filepath, content);
+  try {
+    return callback(filepath);
+  } finally {
+    if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+  }
+}
