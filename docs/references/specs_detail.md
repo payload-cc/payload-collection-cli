@@ -6,13 +6,14 @@
 The CLI supports the following arguments:
 
 ```bash
-npx @payload-cc/payload-collection-cli [-c config-file] <collection-slug> <operation> <file or string>
+npx @payload-cc/payload-collection-cli [-c config-file] [-e exportName] <collection-slug> <operation> <file or string>
 ```
 
 - `-c`, `--config`: Path to a TypeScript/JavaScript configuration file or an inline JSON string.
+- `-e`, `--export`: The name of the export to use from the configuration file (defaults to `cliConfig`).
 
 ### Configuration File (`cliConfig`)
-By default, the CLI looks for a named export `cliConfig` or a `default` export in the configuration file.
+By default, the CLI looks for a named export `cliConfig` or a `default` export in the configuration file. You can override this using the `-e` flag.
 
 #### Relation Mappings
 The core of the configuration is the `mappings` object, which allows you to define how relationship fields are resolved.
@@ -47,7 +48,7 @@ export const cliConfig = {
 
 ## Overriding defaults in package.json
 
-You can define default values for any CLI argument in your `package.json`. This is useful for avoiding repetitive flags in a specific project.
+You can define default values for CLI **options** in your `package.json`. Note that positional arguments (`collection`, `action`, `input`) **cannot** be defaulted in `package.json` and must always be provided via CLI.
 
 Add a `payload-collection-cli` field to your `package.json`:
 
@@ -55,10 +56,7 @@ Add a `payload-collection-cli` field to your `package.json`:
 {
   "payload-collection-cli": {
     "config": "./payload-collection-cli.config.ts",
-    "configExportName": "myCustomConfig",
-    "collection": "users",
-    "action": "upsert",
-    "input": "data.jsonl"
+    "configExportName": "myCustomConfig"
   }
 }
 ```
@@ -66,10 +64,7 @@ Add a `payload-collection-cli` field to your `package.json`:
 | Key | Description | Default |
 |-----|-------------|---------|
 | `config` | Path to the config file (equivalent to `-c`) | _(none)_ |
-| `configExportName` | The name of the export to look for in the config file | `cliConfig` |
-| `collection` | Default collection slug | _(none)_ |
-| `action` | Default action (`create`, `upsert`, `update`, `delete`) | _(none)_ |
-| `input` | Default data input (file path or JSON string) | _(none)_ |
+| `configExportName` | The name of the export to look for in the config file (equivalent to `-e`) | `cliConfig` |
 
 ---
 

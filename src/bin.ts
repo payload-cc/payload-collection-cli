@@ -9,7 +9,8 @@ const jiti = createJiti(import.meta.url);
 
 /**
  * Read defaults from the "payload-collection-cli" field in package.json.
- * Returns an object with optional keys: config, configExportName, collection, action, input.
+ * Returns an object with optional keys: config, configExportName.
+ * Note: collection, action, and input are positional and MUST be provided via CLI.
  */
 function readPackageJsonDefaults(root: string): Record<string, string> {
   const pkgPath = path.resolve(root, 'package.json');
@@ -27,6 +28,20 @@ async function run() {
   const pkgDefaults = readPackageJsonDefaults(root);
 
   const args = process.argv.slice(2);
+
+  // --- Extract -e / --export from CLI args ---
+  let exportOptIdx = args.indexOf('-e');
+  if (exportOptIdx === -1) exportOptIdx = args.indexOf('--export');
+  
+  let exportName = pkgDefaults.configExportName || 'cliConfig';
+  if (exportOptIdx !== -1) {
+    if (args.length <= exportOptIdx + 1) {
+      console.error('❌ Error: Missing option after --export parameter.');
+      process.exit(1);
+    }
+    exportName = args[exportOptIdx + 1];
+    args.splice(exportOptIdx, 2);
+  }
 
   // --- Extract -c / --config from CLI args ---
   let configOptIdx = args.indexOf('-c');
@@ -46,7 +61,6 @@ async function run() {
   }
 
   // --- Load CLI config ---
-  const exportName = pkgDefaults.configExportName || 'cliConfig';
   let cliConfig = { mappings: {} };
 
   if (configVal) {
@@ -68,13 +82,11 @@ async function run() {
     }
   }
 
-  // --- Resolve positional args with package.json fallbacks ---
-  const collection = args[0] || pkgDefaults.collection;
-  const action = args[1] || pkgDefaults.action;
-  const input = args[2] || pkgDefaults.input;
+  // --- Resolve positional args (No package.json fallbacks allowed for args) ---
+  const [collection, action, input] = args;
 
   if (!collection || !action || !input) {
-    console.log('Usage: payload-collection-cli [-c path] <collection> <action> <json|file.jsonl>');
+    console.log('Usage: payload-collection-cli [-c path] [-e exportName] <collection> <action> <json|file.jsonl>');
     process.exit(1);
   }
 
