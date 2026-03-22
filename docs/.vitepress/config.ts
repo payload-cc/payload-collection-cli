@@ -65,8 +65,8 @@ export default defineConfig({
                   output += `### Test Scenario (\`scenario.test.ts\`)\n\`\`\`typescript\n${fs.readFileSync(testPath, 'utf-8')}\n\`\`\`\n\n`
                 }
                 
-                return output + '---\n'
-              }).join('\n\n')
+                return output.trim()
+              }).join('\n\n---\n\n')
             })
           }
           return originalRender.call(this, src, env);
