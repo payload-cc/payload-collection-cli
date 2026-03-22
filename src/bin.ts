@@ -45,7 +45,7 @@ async function run() {
   // Priority: configJson (CLI/pkg) > configFile (CLI/pkg)
   if (configJson) {
     try {
-      cliConfig = JSON.parse(configJson);
+      cliConfig = typeof configJson === 'string' ? JSON.parse(configJson) : configJson;
     } catch (err) {
       console.error('❌ Error: Failed to parse inline JSON config:', err);
       process.exit(1);
@@ -89,4 +89,7 @@ async function run() {
   process.exit(0);
 }
 
-run();
+run().catch(err => {
+  console.error('❌ Fatal Error:', err.message);
+  process.exit(1);
+});
