@@ -8,7 +8,8 @@ describe('Relation auto-resolution', () => {
   });
 
   it('safely binds relational fields through pure email string specifications', () => {
-    // 💡 Tests automatic relational field resolution (mapping 'author' email directly to User ID).
+    // 💡 Since resolving relationship fields inherently requires the target document's `id`,
+    // the CLI config auto-resolves explicit relationships (e.g. mapping `author` email directly to `Users.id`).
 
     // 1. Preparation: Upsert the author
     const userDataPath = path.resolve(__dirname, '..', 'success-mapping-upsert', 'data.jsonl');

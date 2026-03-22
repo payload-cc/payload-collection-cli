@@ -8,9 +8,9 @@ describe('Success mapping upsert', () => {
   });
 
   it('upserts users using email as lookup variable provided by strict configuration', () => {
-    // 💡 By default, upsert strictly requires an 'id' field for existence checks.
-    // Since our JSONL data lacks 'id', we must pass an explicit file config 
-    // instructing the CLI to use 'email' as the lookup field.
+    // 💡 In an `upsert` operation, we must provide a configuration to use `email` 
+    // for existence checks instead of the default `id`.
+    // We achieve this by explicitly passing a file-based configuration to the CLI.
     const dataPath = path.resolve(__dirname, 'data.jsonl');
     const configPath = path.resolve(__dirname, 'config.ts');
     

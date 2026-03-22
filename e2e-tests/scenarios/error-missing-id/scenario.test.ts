@@ -8,8 +8,8 @@ describe('Error missing ID strictly enforced', () => {
   });
 
   it('throws an Error explicitly when no lookupField is configured and no id exists', () => {
-    // 💡 Conversely, attempting to upsert data lacking 'id' without providing 
-    // a configuration mapping will strictly trigger the missing lookup field error.
+    // 💡 Conversely, attempting an `upsert` of data lacking `id` without providing 
+    // a configuration mapping will strictly trigger the default `missing lookup field` error.
     const dataPath = path.resolve(__dirname, 'data.jsonl');
     
     const output = runCLI(`users upsert ${dataPath}`);
