@@ -60,15 +60,26 @@ run();
   return [];
 }
 
+export class TempFile {
+  constructor(public filename: string, public content: string) {}
+}
+
 /**
- * Executes a callback with a temporary file that is automatically cleaned up.
+ * Materializes an array of TempFile instances to disk, runs a callback, 
+ * and strictly guarantees their cleanup afterward.
  */
-export function withTempFile<T>(filename: string, content: string, callback: (filepath: string) => T): T {
-  const filepath = path.join(e2eDir, 'scenarios', filename);
-  fs.writeFileSync(filepath, content);
+export function withTempFiles<T>(files: TempFile[], callback: () => T): T {
+  const writtenPaths: string[] = [];
   try {
-    return callback(filepath);
+    for (const file of files) {
+      const filepath = path.join(payloadAppDir, file.filename);
+      fs.writeFileSync(filepath, file.content.trim() + '\n');
+      writtenPaths.push(filepath);
+    }
+    return callback();
   } finally {
-    if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+    for (const filepath of writtenPaths) {
+      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+    }
   }
 }
