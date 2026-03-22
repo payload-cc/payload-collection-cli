@@ -59,6 +59,11 @@ export default defineConfig({
                 if (fs.existsSync(configPath)) {
                   output += `### Configuration (\`config.ts\`)\n\`\`\`typescript\n${fs.readFileSync(configPath, 'utf-8')}\n\`\`\`\n\n`
                 }
+
+                const testPath = path.join(scenarioPath, 'scenario.test.ts')
+                if (fs.existsSync(testPath)) {
+                  output += `### Test Scenario (\`scenario.test.ts\`)\n\`\`\`typescript\n${fs.readFileSync(testPath, 'utf-8')}\n\`\`\`\n\n`
+                }
                 
                 return output + '---\n'
               }).join('\n\n')
