@@ -18,7 +18,12 @@ async function run() {
       'config-file': {
         alias: 'c',
         type: 'string',
-        describe: 'Path to a configuration file or an inline JSON string.',
+        describe: 'Path to a configuration file (named export required).',
+      },
+      'config-json': {
+        alias: 'j',
+        type: 'string',
+        describe: 'Inline JSON string for configuration.',
       },
       'config-export-name': {
         alias: 'n',
@@ -33,34 +38,32 @@ async function run() {
     .parse();
 
   // Positional arguments are in argv._
-  // Options (like config-file) are camelCased by yargs: argv.configFile
-  const { configFile, configExportName, _: [collection, action, input] } = argv as any;
+  const { configFile, configJson, configExportName, _: [collection, action, input] } = argv as any;
 
   let cliConfig = { mappings: {} };
 
-  if (configFile) {
-    if (configFile.trim().startsWith('{')) {
-      try {
-        cliConfig = JSON.parse(configFile);
-      } catch (err) {
-        console.error('❌ Error: Failed to parse inline JSON config:', err);
-        process.exit(1);
-      }
+  // Priority: configJson (CLI/pkg) > configFile (CLI/pkg)
+  if (configJson) {
+    try {
+      cliConfig = JSON.parse(configJson);
+    } catch (err) {
+      console.error('❌ Error: Failed to parse inline JSON config:', err);
+      process.exit(1);
+    }
+  } else if (configFile) {
+    const customConfigPath = path.resolve(root, configFile);
+    if (!fs.existsSync(customConfigPath)) {
+      console.error(`❌ Error: Config file not found at ${customConfigPath}`);
+      process.exit(1);
+    }
+    const imported = await jiti.import(customConfigPath) as any;
+    
+    // Strictly use named export only, no default export fallback
+    if (imported[configExportName]) {
+      cliConfig = imported[configExportName];
     } else {
-      const customConfigPath = path.resolve(root, configFile);
-      if (!fs.existsSync(customConfigPath)) {
-        console.error(`❌ Error: Config file not found at ${customConfigPath}`);
-        process.exit(1);
-      }
-      const imported = await jiti.import(customConfigPath) as any;
-      
-      // Strictly use named export only, no default export fallback
-      if (imported[configExportName]) {
-        cliConfig = imported[configExportName];
-      } else {
-        console.error(`❌ Error: Named export "${configExportName}" not found in ${configFile}`);
-        process.exit(1);
-      }
+      console.error(`❌ Error: Named export "${configExportName}" not found in ${configFile}`);
+      process.exit(1);
     }
   }
 

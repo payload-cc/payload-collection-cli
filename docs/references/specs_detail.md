@@ -6,7 +6,8 @@ The following options can be set either via CLI flags or as defaults in your `pa
 
 | CLI Option (Short/Long) | `package.json` Key | Default | Description |
 |-------------------------|-------------------|---------|-------------|
-| `-c`, `--config-file` | `configFile` | _(none)_ | Path to a configuration file or an inline JSON string. |
+| `-j`, `--config-json` | `configJson` | _(none)_ | Inline JSON string for configuration. Takes precedence over `configFile`. |
+| `-c`, `--config-file` | `configFile` | _(none)_ | Path to a configuration file (named export required). |
 | `-n`, `--config-export-name` | `configExportName` | `cliConfig` | The name of the export to use from the configuration file. |
 
 ### CLI Syntax
@@ -22,7 +23,8 @@ To use defaults, add a `payload-collection-cli` field to your `package.json`:
 {
   "payload-collection-cli": {
     "configFile": "./payload-collection-cli.config.ts",
-    "configExportName": "myCustomConfig"
+    "configExportName": "myCustomConfig",
+    "configJson": "{\"mappings\": { \"users\": { \"lookupField\": \"email\" }}}"
   }
 }
 ```

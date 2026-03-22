@@ -9,11 +9,14 @@ npx -y create-payload-app@latest -n _payload -t blank --db sqlite --no-deps --db
 if [ -d "payload" ]; then mv payload _payload; fi
 cd _payload
 mkdir -p src/collections
+cp ../payload-template/Users.ts src/collections/Users.ts
+cp ../payload-template/Media.ts src/collections/Media.ts
 cp ../payload-template/Posts.ts src/collections/Posts.ts
 cp ../payload-template/Categories.ts src/collections/Categories.ts
 cp ../payload-template/constants.ts src/constants.ts
 cp ../payload-template/payload.config.ts src/payload.config.ts
 pnpm install
+pnpm add @payloadcms/db-sqlite @payloadcms/richtext-lexical
 """
 
 [tasks.test]

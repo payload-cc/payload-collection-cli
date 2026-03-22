@@ -14,7 +14,7 @@ describe('Success mapping upsert via inline string config', () => {
     const dataPath = path.resolve(__dirname, 'data.jsonl');
     
     // Pass config directly as an inline JSON string
-    const output = runCLI(`-c '{"mappings":{"users":{"lookupField":"email"}}}' users upsert ${dataPath}`);
+    const output = runCLI(`-j '{"mappings":{"users":{"lookupField":"email"}}}' users upsert ${dataPath}`);
     
     expect(output).toContain('Operation successful');
 
