@@ -104,7 +104,7 @@ export default defineConfig({
 								return output.trim();
 							})
 							.filter(Boolean)
-							.join("\n\n<hr />\n\n");
+							.join('\n\n<div style="text-align: center; color: #ccc;">--- SCENARIO SEPARATOR ---</div>\n\n');
 					});
 				}
 				return originalRender.call(this, src, env);
