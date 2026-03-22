@@ -1,22 +1,48 @@
 # Payload Collection CLI - Specifications & FAQs
 
-## Command Options and Configuration File
+## Global Configuration Options
 
-### CLI Command Options
-The CLI supports the following arguments:
+The following options can be set either via CLI flags or as defaults in your `package.json`.
 
+| CLI Option (Short/Long) | `package.json` Key | Description | Default |
+|-------------------------|-------------------|-------------|---------|
+| `-c`, `--config-file` | `configFile` | Path to a configuration file or an inline JSON string. | _(none)_ |
+| `-n`, `--config-export-name` | `configExportName` | The name of the export to use from the configuration file. | `cliConfig` |
+
+---
+
+## Command Options
+
+### CLI Syntax
 ```bash
-npx @payload-cc/payload-collection-cli [-c config-file] [-e exportName] <collection-slug> <operation> <file or string>
+npx @payload-cc/payload-collection-cli [-c config-file] [-n export-name] <collection-slug> <operation> <file or string>
 ```
 
-- `-c`, `--config`: Path to a TypeScript/JavaScript configuration file or an inline JSON string.
-- `-e`, `--export`: The name of the export to use from the configuration file (defaults to `cliConfig`).
+Note that positional arguments (`collection-slug`, `operation`, `file or string`) are **mandatory** and cannot be defaulted via `package.json`.
 
-### Configuration File (`cliConfig`)
-By default, the CLI looks for a named export `cliConfig` or a `default` export in the configuration file. You can override this using the `-e` flag.
+---
 
-#### Relation Mappings
-The core of the configuration is the `mappings` object, which allows you to define how relationship fields are resolved.
+## Overriding defaults in package.json
+
+You can define default values for CLI **options** in your `package.json` under the `payload-collection-cli` key.
+
+```json
+{
+  "payload-collection-cli": {
+    "configFile": "./payload-collection-cli.config.ts",
+    "configExportName": "myCustomConfig"
+  }
+}
+```
+
+---
+
+## Configuration File (`cliConfig`)
+
+The CLI strictly looks for a **named export** in the configuration file (defaulting to `cliConfig`). **Default exports are not supported.**
+
+### Relation Mappings
+The core of the configuration is the `mappings` object in your config file.
 
 ```typescript
 export const cliConfig = {
@@ -38,46 +64,21 @@ export const cliConfig = {
 }
 ```
 
-| Mapping Option | Description |
-|----------------|-------------|
-| `lookupField` | The field used to find the target document. Defaults to `id`. |
-| `onNotFound` | Action when a document is not found: `'error'` (default), `'ignore'`, or `'create'`. |
-| `defaults` | An object containing default values to be injected into the record before processing. |
-
----
-
-## Overriding defaults in package.json
-
-You can define default values for CLI **options** in your `package.json`. Note that positional arguments (`collection`, `action`, `input`) **cannot** be defaulted in `package.json` and must always be provided via CLI.
-
-Add a `payload-collection-cli` field to your `package.json`:
-
-```json
-{
-  "payload-collection-cli": {
-    "config": "./payload-collection-cli.config.ts",
-    "configExportName": "myCustomConfig"
-  }
-}
-```
-
-| Key | Description | Default |
-|-----|-------------|---------|
-| `config` | Path to the config file (equivalent to `-c`) | _(none)_ |
-| `configExportName` | The name of the export to look for in the config file (equivalent to `-e`) | `cliConfig` |
+| Mapping Option | Description | Default |
+|----------------|-------------|---------|
+| `lookupField` | The field used to find the target document. | `id` |
+| `onNotFound` | Action when a document is not found (`'error'`, `'ignore'`, `'create'`). | `'error'` |
+| `defaults` | Default values injected into the record before processing. | _(none)_ |
 
 ---
 
 ## FAQ
 
 ### What is the correct behavior for `upsert`, `update`, and `delete` when the lookup field is missing?
-The CLI strictly requires a unique identifier (the `lookupField`) to locate the target record. If the field is missing from your data, the CLI will **throw an Error**.
-
-**Why?**
-To prevent accidental data corruption or duplicate records. If an `upsert` silently created a new record when the identifier was missing (e.g., due to a typo), it could result in thousands of duplicate entries. Enforcing an error ensures that you are explicitly identifying the records you intend to modify.
+The CLI strictly requires a unique identifier (the `lookupField`) to locate the target record. If the field is missing from your data, the CLI will **throw an Error**. This prevents accidental data corruption or duplicate records.
 
 ### Can I include imports in my configuration file?
-Yes! Since the configuration is loaded using `jiti`, you can use standard TypeScript/ESM imports to reference constants or logic from your Payload project.
+Yes! Since the configuration is loaded using `jiti`, you can use standard TypeScript/ESM imports.
 
 ```typescript
 import { DEFAULT_CATEGORY_NAME } from './src/constants';
@@ -90,7 +91,7 @@ export const cliConfig = {
   }
 }
 ```
-**Note:** Imports are resolved relative to the location of the configuration file itself.
+**Note:** Imports are resolved relative to the configuration file's location.
 
 ### Should I specify the ID in my data files?
-If you are using `upsert`, `update`, or `delete` and have not configured a custom `lookupField`, then **yes**, you must provide the `id`. If you are using `create`, Payload will automatically generate the ID for you.
+If you use `upsert`, `update`, or `delete` without a custom `lookupField`, you **must** provide the `id`. For `create`, Payload will auto-generate the ID.

@@ -9,7 +9,7 @@ const jiti = createJiti(import.meta.url);
 
 /**
  * Read defaults from the "payload-collection-cli" field in package.json.
- * Returns an object with optional keys: config, configExportName.
+ * Returns an object with optional keys: configFile, configExportName.
  * Note: collection, action, and input are positional and MUST be provided via CLI.
  */
 function readPackageJsonDefaults(root: string): Record<string, string> {
@@ -29,35 +29,35 @@ async function run() {
 
   const args = process.argv.slice(2);
 
-  // --- Extract -e / --export from CLI args ---
-  let exportOptIdx = args.indexOf('-e');
-  if (exportOptIdx === -1) exportOptIdx = args.indexOf('--export');
+  // --- Extract -n / --config-export-name from CLI args ---
+  let exportOptIdx = args.indexOf('-n');
+  if (exportOptIdx === -1) exportOptIdx = args.indexOf('--config-export-name');
   
   let exportName = pkgDefaults.configExportName || 'cliConfig';
   if (exportOptIdx !== -1) {
     if (args.length <= exportOptIdx + 1) {
-      console.error('❌ Error: Missing option after --export parameter.');
+      console.error('❌ Error: Missing option after --config-export-name parameter.');
       process.exit(1);
     }
     exportName = args[exportOptIdx + 1];
     args.splice(exportOptIdx, 2);
   }
 
-  // --- Extract -c / --config from CLI args ---
+  // --- Extract -c / --config-file from CLI args ---
   let configOptIdx = args.indexOf('-c');
-  if (configOptIdx === -1) configOptIdx = args.indexOf('--config');
+  if (configOptIdx === -1) configOptIdx = args.indexOf('--config-file');
 
   let configVal: string | undefined;
   if (configOptIdx !== -1) {
     if (args.length <= configOptIdx + 1) {
-      console.error('❌ Error: Missing option after --config parameter.');
+      console.error('❌ Error: Missing option after --config-file parameter.');
       process.exit(1);
     }
     configVal = args[configOptIdx + 1];
     args.splice(configOptIdx, 2);
-  } else if (pkgDefaults.config) {
+  } else if (pkgDefaults.configFile) {
     // Fallback to package.json default
-    configVal = pkgDefaults.config;
+    configVal = pkgDefaults.configFile;
   }
 
   // --- Load CLI config ---
@@ -78,15 +78,21 @@ async function run() {
         process.exit(1);
       }
       const imported = await jiti.import(customConfigPath) as any;
-      cliConfig = imported[exportName] || imported.default || cliConfig;
+      // Strictly use named export only, no default export fallback
+      if (imported[exportName]) {
+        cliConfig = imported[exportName];
+      } else {
+        console.error(`❌ Error: Named export "${exportName}" not found in ${configVal}`);
+        process.exit(1);
+      }
     }
   }
 
-  // --- Resolve positional args (No package.json fallbacks allowed for args) ---
+  // --- Resolve positional args ---
   const [collection, action, input] = args;
 
   if (!collection || !action || !input) {
-    console.log('Usage: payload-collection-cli [-c path] [-e exportName] <collection> <action> <json|file.jsonl>');
+    console.log('Usage: payload-collection-cli [-c configFile] [-n exportName] <collection> <action> <json|file.jsonl>');
     process.exit(1);
   }
 
