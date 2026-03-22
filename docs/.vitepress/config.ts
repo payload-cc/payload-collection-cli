@@ -15,16 +15,21 @@ export default defineConfig({
         const originalRender = md.render;
         md.render = function (this: any, src, env) {
           if (env.path && env.path.endsWith('ai.md')) {
-            // Find placeholder and replace with resolved content
+            // Find placeholder and replace with resolved content from the pages list
             src = src.replace('[[AI_CONTEXT_BUNDLE]]', () => {
-              const rootDir = path.resolve(process.cwd())
-              const readmePath = path.resolve(rootDir, 'README.md')
-              const specsPath = path.resolve(rootDir, 'docs/references/specs_detail.md')
+              const rootDir = process.cwd()
+              const pages = [
+                'README.md',
+                'docs/references/specs_detail.md'
+              ]
               
-              const readme = fs.existsSync(readmePath) ? fs.readFileSync(readmePath, 'utf-8') : ''
-              const specs = fs.existsSync(specsPath) ? fs.readFileSync(specsPath, 'utf-8') : ''
-              
-              return `${readme}\n\n---\n\n${specs}`.replace(/\(docs\//g, '(/')
+              return pages
+                .map(file => {
+                  const filePath = path.resolve(rootDir, file)
+                  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : ''
+                })
+                .join('\n\n---\n\n')
+                .replace(/\(docs\//g, '(/')
             })
           }
           return originalRender.call(this, src, env);
