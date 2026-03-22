@@ -8,7 +8,7 @@ import { hideBin } from 'yargs/helpers';
 import { z } from 'zod';
 import { execute } from './executor';
 
-const jiti = createJiti(import.meta.url, { moduleCache: false, fsCache: false });
+const jiti = createJiti(import.meta.url);
 
 const MappingConfigSchema = z.object({
   lookupField: z.string().default('id'),

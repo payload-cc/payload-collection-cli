@@ -24,7 +24,8 @@ describe('Error validation', () => {
 
   it('fails when a unique constraint is violated in create', () => {
     // 1. Create a category
-    runCLI(`categories create '{"name": "unique-cat", "displayName": "Unique"}'`);
+    const output1 = runCLI(`categories create '{"name": "unique-cat", "displayName": "Unique"}'`);
+    expect(output1).toContain('Operation successful');
     
     // 2. Attempt to create another category with the same name
     const output = runCLI(`categories create '{"name": "unique-cat", "displayName": "Duplicate"}'`);
