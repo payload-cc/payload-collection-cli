@@ -7,6 +7,8 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/deploy-docs.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
 
 permissions:
   contents: write
@@ -17,8 +19,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build documentation
+        run: pnpm docs:build
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          publish_dir: docs/.vitepress/dist

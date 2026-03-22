@@ -1,6 +1,7 @@
 {
   "name": "@payload-cc/payload-collection-cli",
   "version": "1.2.0",
+  "type": "module",
   "description": "Functional CLI for Payload 3.0 collection management",
   "repository": {
     "type": "git",
@@ -23,7 +24,10 @@
     "build": "tsup src/index.ts src/bin.ts --format cjs,esm --dts --clean --shims && chmod +x dist/bin.js",
     "release": "pnpm build && pnpm publish --access public",
     "test": "vitest run tests/*",
-    "test:e2e": "vitest run e2e-tests/scenarios/ --no-file-parallelism"
+    "test:e2e": "vitest run e2e-tests/scenarios/ --no-file-parallelism",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "keywords": [
     "payload",
@@ -47,6 +51,7 @@
     "payload": "^3.79.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
+    "vitepress": "^1.6.4",
     "vitest": "^4.1.0"
   }
 }
