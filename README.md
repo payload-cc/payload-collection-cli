@@ -38,34 +38,9 @@ npx @payload-cc/payload-collection-cli -c ./my-map.config.ts users upsert data.j
 - `delete`: Delete records.
 - `upsert`: Update if existing, create if not.
 
-## Specifications & FAQ
-For detailed behavior specifications (such as how identifier lookups work strictly during upserts, updates, and deletes), please refer to the [Specifications & FAQ](docs/references/specs_detail.md).
+## Configuration & Specifications
 
-## Configuration (Optional)
-
-### Relation Mappings (`payload-collection-cli.config.ts`)
-By default, Payload relations require you to provide target document IDs (e.g., ObjectIDs or numeric IDs). The CLI can magically resolve these relations by searching for human-readable fields instead.
-
-**Example Scenario**:
-Assume your `posts` collection has a relationship field named `author` that references the `users` collection. Instead of manually finding and hard-coding the user's database ID, you want to simply provide their email address.
-
-Create a `payload-collection-cli.config.ts` in your Payload project root (or pass it via `-c`) to define the `lookupField` for the `users` collection:
-
-```typescript
-export const cliConfig = {
-  mappings: {
-    users: {
-      lookupField: 'email',
-      onNotFound: 'error',
-    },
-    posts: {
-      lookupField: 'slug'
-    }
-  }
-}
-```
-
-Now, when you supply an `author: "user@example.com"` property to a `posts` collection insertion, the CLI will intercept this relationship, look up the `users` collection by the `email` field, and automatically replace the email string with the actual database ID before inserting!
+For detailed configuration options (including `package.json` defaults, relation mappings, `onNotFound` behaviors, and cross-file imports), please refer to the [Specifications & Configuration Guide](docs/references/specs_detail.md).
 
 ## Development & CI/CD
 
