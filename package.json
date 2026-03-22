@@ -38,7 +38,8 @@
   },
   "dependencies": {
     "jiti": "^2.6.1",
-    "yargs": "^18.0.0"
+    "yargs": "^18.0.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

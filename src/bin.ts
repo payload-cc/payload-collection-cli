@@ -5,9 +5,20 @@ import path from 'path';
 import fs from 'fs';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
+import { z } from 'zod';
 import { execute } from './executor';
 
 const jiti = createJiti(import.meta.url);
+
+const MappingConfigSchema = z.object({
+  lookupField: z.string().default('id'),
+  onNotFound: z.enum(['error', 'ignore', 'create']).default('error'),
+  defaults: z.record(z.string(), z.any()).optional(),
+});
+
+const CLIConfigSchema = z.object({
+  mappings: z.record(z.string(), MappingConfigSchema).default({}),
+});
 
 async function run() {
   const root = process.cwd();
@@ -40,12 +51,12 @@ async function run() {
   // Positional arguments are in argv._
   const { configFile, configJson, configExportName, _: [collection, action, input] } = argv as any;
 
-  let cliConfig = { mappings: {} };
+  let rawConfig: any = { mappings: {} };
 
   // Priority: configJson (CLI/pkg) > configFile (CLI/pkg)
   if (configJson) {
     try {
-      cliConfig = typeof configJson === 'string' ? JSON.parse(configJson) : configJson;
+      rawConfig = typeof configJson === 'string' ? JSON.parse(configJson) : configJson;
     } catch (err) {
       console.error('❌ Error: Failed to parse inline JSON config:', err);
       process.exit(1);
@@ -60,12 +71,23 @@ async function run() {
     
     // Strictly use named export only, no default export fallback
     if (imported[configExportName]) {
-      cliConfig = imported[configExportName];
+      rawConfig = imported[configExportName];
     } else {
       console.error(`❌ Error: Named export "${configExportName}" not found in ${configFile}`);
       process.exit(1);
     }
   }
+
+  // Validate the configuration using Zod
+  const validation = CLIConfigSchema.safeParse(rawConfig);
+  if (!validation.success) {
+    console.error('❌ Error: Invalid configuration structure:');
+    validation.error.issues.forEach(issue => {
+      console.error(`  - [${issue.path.join('.')}] ${issue.message}`);
+    });
+    process.exit(1);
+  }
+  const cliConfig = validation.data;
 
   // Auto-discover payload.config
   const configPath = [
