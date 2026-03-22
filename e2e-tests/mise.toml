@@ -16,6 +16,7 @@ pnpm install
 
 [tasks.test]
 description = "Run all E2E test scenarios within the _payload app context"
+depends = ["init"]
 run = """
 #!/usr/bin/env bash
 set -e
