@@ -4,6 +4,9 @@ export default defineConfig({
   title: "Payload Collection CLI",
   description: "Functional CLI for Payload 3.0 collection management",
   base: '/payload-collection-cli/',
+  head: [
+    ['link', { rel: 'icon', href: '/payload-collection-cli/logo.png' }]
+  ],
   markdown: {
     config: (md) => {
       const originalRender = md.render;
@@ -16,6 +19,7 @@ export default defineConfig({
     }
   },
   themeConfig: {
+    logo: '/logo.png',
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Specs', link: '/references/specs_detail' },

@@ -4,6 +4,9 @@ hero:
   name: payload-collection-cli
   text: Manage collections without writing boilerplate scripts.
   tagline: The missing CLI for Payload 3.0. Turn your terminal into a direct interface for your collections.
+  image:
+    src: /logo.png
+    alt: Payload Collection CLI Logo
   actions:
     - theme: alt
       text: Get Started
