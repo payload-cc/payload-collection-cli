@@ -2,20 +2,24 @@
 description = "Initialize a dummy Payload application for E2E testing"
 run = """
 #!/usr/bin/env bash
-rm -rf _payload
-npx -y create-payload-app@latest _payload -t blank --db sqlite --no-deps
+set -e
+rm -rf _payload payload
+npx -y create-payload-app@latest -n _payload -t blank --db sqlite --no-deps
+# Fallback rename just in case it creates 'payload' instead of '_payload'
+if [ -d "payload" ]; then mv payload _payload; fi
 cd _payload
 pnpm install
-pnpm add file:../../
 """
 
 [tasks.test]
 description = "Test the upsert command on the dummy Payload app"
 run = """
 #!/usr/bin/env bash
+set -e
 echo "Building the CLI before test..."
 pnpm --dir ../ build
 cd _payload
+cp ../payload-collection-cli.config.ts .
 export $(grep -v '^#' .env | xargs)
 node ../../dist/bin.js users upsert ../data.jsonl
 """
