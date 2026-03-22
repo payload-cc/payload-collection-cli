@@ -49,6 +49,8 @@ async function run() {
     .help()
     .parse();
 
+  console.log('📊 Parsed arguments:', JSON.stringify(argv, null, 2));
+
   // Positional arguments are in argv._
   const { configFile, configJson, configExportName, _: [collection, action, input] } = argv as any;
 
