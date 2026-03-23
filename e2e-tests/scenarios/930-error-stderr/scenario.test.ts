@@ -7,31 +7,24 @@ describe("Error stderr reporting", () => {
 		resetDatabase();
 	});
 
-	it("reports CONFIG_NOT_FOUND to stderr", () => {
-		// Run with a non-existent config file
-		const { stdout, stderr, status } = runCLIFull("--config-file missing.ts users create '{}'");
+	it("reports COLLECTION_NOT_FOUND to stderr with non-zero exit code", () => {
+		const { stderr, stdout, status } = runCLIFull("non-existent-collection create '{}'");
 
-		// Should fail
 		expect(status).toBe(1);
-		
-		// Error should be in stderr, not stdout
-		expect(stderr).toContain("❌ [CONFIG_NOT_FOUND]");
-		expect(stderr).toContain("Tip:");
-		expect(stderr).toContain("Refer to:");
-		
-		// Stdout should not contain the error message
-		expect(stdout).not.toContain("❌ [CONFIG_NOT_FOUND]");
+		// Error should be in stderr
+		expect(stderr).toContain("error: [COLLECTION_NOT_FOUND]");
+		expect(stdout).not.toContain("error: [COLLECTION_NOT_FOUND]");
 	}, 60000);
 
-	it("reports COLLECTION_NOT_FOUND to stderr", () => {
-		// Run with a non-existent collection
-		const { stdout, stderr, status } = runCLIFull("non-existent-collection create '{}'");
+	it("reports CONFIG_NOT_FOUND to stderr with non-zero exit code", () => {
+		const { stderr, stdout, status } = runCLIFull("-c non-existent.config.ts users create '{}'");
 
-		// Should fail
 		expect(status).toBe(1);
+		expect(stderr).toContain("error: [CONFIG_NOT_FOUND]");
+		expect(stderr).toContain("tip:");
+		expect(stderr).toContain("refer to:");
 		
-		// Error should be in stderr
-		expect(stderr).toContain("❌ [COLLECTION_NOT_FOUND]");
-		expect(stdout).not.toContain("❌ [COLLECTION_NOT_FOUND]");
+		// Error should not be in stdout
+		expect(stdout).not.toContain("error: [CONFIG_NOT_FOUND]");
 	}, 60000);
 });

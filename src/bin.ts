@@ -23,16 +23,16 @@ const CLIConfigSchema = z.object({
 
 function handleError(err: any) {
 	if (err instanceof PayloadCollectionCLIError) {
-		console.error(`❌ [${err.slug}] ${err.message}`);
+		console.error(`error: [${err.slug}] ${err.message}`);
 		const tip = ERROR_TIPS[err.slug];
 		if (tip) {
-			console.error(`\nTip: ${tip}`);
+			console.error(`\ntip: ${tip}`);
 		}
 		// Convert slug to a potential anchor link (approximate)
 		const anchor = err.slug.toLowerCase().replace(/_/g, "-");
-		console.error(`Refer to: docs/references/errors.md#${anchor}`);
+		console.error(`refer to: docs/references/errors.md#${anchor}`);
 	} else {
-		console.error("❌ Fatal Error:", err.message);
+		console.error("error: fatal:", err.message);
 		if (err.stack && process.env.DEBUG) {
 			console.error(err.stack);
 		}
@@ -41,7 +41,7 @@ function handleError(err: any) {
 }
 
 async function run() {
-	console.log("🏁 Starting CLI...");
+	if (process.env.DEBUG) console.log("starting cli...");
 	const root = process.cwd();
 
 	const argv = await yargs(hideBin(process.argv))
@@ -69,7 +69,7 @@ async function run() {
 		.help()
 		.parseSync();
 
-	console.log("📊 Parsed arguments:", JSON.stringify(argv, null, 2));
+	if (process.env.DEBUG) console.log("parsed arguments:", JSON.stringify(argv, null, 2));
 
 	const {
 		configFile,
@@ -137,7 +137,7 @@ async function run() {
 			"payload.config.ts not found.",
 		);
 	}
-	console.log(`📖 Loading payload config from: ${configPath}`);
+	if (process.env.DEBUG) console.log(`loading payload config from: ${configPath}`);
 
 	const { default: payloadConfig } = (await jiti.import(configPath)) as any;
 	const payload = await getPayload({ config: payloadConfig });
@@ -147,7 +147,7 @@ async function run() {
 			"Failed to initialize Payload.",
 		);
 	}
-	console.log("✅ Connected to Payload");
+	if (process.env.DEBUG) console.log("connected to payload");
 
 	await execute(
 		payload,
@@ -156,7 +156,7 @@ async function run() {
 		input as string,
 		cliConfig as any,
 	);
-	console.log("✨ Operation successful");
+	console.log("Operation successful");
 	process.exit(0);
 }
 

@@ -15,7 +15,7 @@ describe("Error invalid config", () => {
 			`-j '{"mappings":{"users":{"onNotFound":"invalid-action"}}}' users upsert ${dataPath}`,
 		);
 
-		expect(output).toContain("❌ [CONFIG_INVALID] Invalid configuration structure:");
+		expect(output).toContain("error: [CONFIG_INVALID] Invalid configuration structure:");
 		expect(output).toContain("mappings.users.onNotFound");
 		expect(output).toContain("error");
 		expect(output).toContain("ignore");
@@ -29,7 +29,7 @@ describe("Error invalid config", () => {
 			`-j '{"mappings":{"users":{"lookupField": 123}}}' users upsert ${dataPath}`,
 		);
 
-		expect(output).toContain("❌ [CONFIG_INVALID] Invalid configuration structure:");
+		expect(output).toContain("error: [CONFIG_INVALID] Invalid configuration structure:");
 		expect(output).toContain("mappings.users.lookupField");
 		expect(output).toContain("expected string, received number");
 	}, 60000);
