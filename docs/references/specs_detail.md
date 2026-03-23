@@ -36,6 +36,32 @@ To use defaults, add a `payload-collection-cli` field to your `package.json`:
 
 ---
 
+## Technical Details
+
+### Operations
+
+The CLI supports standard CRUD operations and advanced atomic updates via JSON Patch.
+
+| Operation | Input Format | Description |
+|-----------|--------------|-------------|
+| `create`  | JSON/JSONL   | Creates new records. |
+| `update`  | JSON/JSONL   | Updates existing records (requires `lookupField`). |
+| `delete`  | JSON/JSONL/ID| Deletes records (requires `lookupField`). |
+| `upsert`  | JSON/JSONL   | Updates if found, otherwise creates. |
+| `patch`   | JSON (Patch) | Executes a standard JSON Patch (RFC 6902). |
+| `sync`    | JSON/JSONL   | Synchronizes a collection with the provided data (Adds/Updates/Deletes). |
+
+### Identifier-based Paths (Entity JSON Patch)
+
+For `patch` and `sync` operations, the CLI supports identifier-based paths to target specific documents without knowing their internal IDs:
+
+- `/[field=value]/sub/path`: Target a document where `field` equals `value`.
+- `/-`: Appends a new document (used in `add` operations).
+
+Example: `/[email=user@example.com]/name` targets the `name` field of the user with that email.
+
+---
+
 ## Configuration (`cliConfig`)
 
 The CLI strictly looks for a **named export** in the configuration file (defaulting to `cliConfig`). **Default exports are not supported.**
