@@ -7,6 +7,7 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 import { execute } from "./executor";
+import { PayloadCollectionCLIError, ERROR_TIPS } from "./errors";
 
 const jiti = createJiti(import.meta.url);
 
@@ -19,6 +20,25 @@ const MappingConfigSchema = z.object({
 const CLIConfigSchema = z.object({
 	mappings: z.record(z.string(), MappingConfigSchema).default({}),
 });
+
+function handleError(err: any) {
+	if (err instanceof PayloadCollectionCLIError) {
+		console.error(`❌ [${err.slug}] ${err.message}`);
+		const tip = ERROR_TIPS[err.slug];
+		if (tip) {
+			console.error(`\nTip: ${tip}`);
+		}
+		// Convert slug to a potential anchor link (approximate)
+		const anchor = err.slug.toLowerCase().replace(/_/g, "-");
+		console.error(`Refer to: docs/references/errors.md#${anchor}`);
+	} else {
+		console.error("❌ Fatal Error:", err.message);
+		if (err.stack && process.env.DEBUG) {
+			console.error(err.stack);
+		}
+	}
+	process.exit(1);
+}
 
 async function run() {
 	console.log("🏁 Starting CLI...");
@@ -65,15 +85,19 @@ async function run() {
 		try {
 			rawConfig =
 				typeof configJson === "string" ? JSON.parse(configJson) : configJson;
-		} catch (err) {
-			console.error("❌ Error: Failed to parse inline JSON config:", err);
-			process.exit(1);
+		} catch (err: any) {
+			throw new PayloadCollectionCLIError(
+				"CONFIG_INVALID",
+				`Failed to parse inline JSON config: ${err.message}`,
+			);
 		}
 	} else if (configFile) {
 		const customConfigPath = path.resolve(root, configFile);
 		if (!fs.existsSync(customConfigPath)) {
-			console.error(`❌ Error: Config file not found at ${customConfigPath}`);
-			process.exit(1);
+			throw new PayloadCollectionCLIError(
+				"CONFIG_NOT_FOUND",
+				`Config file not found at ${customConfigPath}`,
+			);
 		}
 		const imported = (await jiti.import(customConfigPath)) as any;
 
@@ -81,21 +105,23 @@ async function run() {
 		if (imported[configExportName]) {
 			rawConfig = imported[configExportName];
 		} else {
-			console.error(
-				`❌ Error: Named export "${configExportName}" not found in ${configFile}`,
+			throw new PayloadCollectionCLIError(
+				"CONFIG_EXPORT_NOT_FOUND",
+				`Named export "${configExportName}" not found in ${configFile}`,
 			);
-			process.exit(1);
 		}
 	}
 
 	// Validate the configuration using Zod
 	const validation = CLIConfigSchema.safeParse(rawConfig);
 	if (!validation.success) {
-		console.error("❌ Error: Invalid configuration structure:");
-		validation.error.issues.forEach((issue) => {
-			console.error(`  - [${issue.path.join(".")}] ${issue.message}`);
-		});
-		process.exit(1);
+		const messages = validation.error.issues
+			.map((issue) => `[${issue.path.join(".")}] ${issue.message}`)
+			.join("\n  - ");
+		throw new PayloadCollectionCLIError(
+			"CONFIG_INVALID",
+			`Invalid configuration structure:\n  - ${messages}`,
+		);
 	}
 	const cliConfig = validation.data;
 
@@ -106,32 +132,32 @@ async function run() {
 	].find((p) => fs.existsSync(p));
 
 	if (!configPath) {
-		console.error("❌ Error: payload.config.ts not found.");
-		process.exit(1);
+		throw new PayloadCollectionCLIError(
+			"PAYLOAD_CONFIG_NOT_FOUND",
+			"payload.config.ts not found.",
+		);
 	}
 	console.log(`📖 Loading payload config from: ${configPath}`);
 
 	const { default: payloadConfig } = (await jiti.import(configPath)) as any;
 	const payload = await getPayload({ config: payloadConfig });
+	if (!payload) {
+		throw new PayloadCollectionCLIError(
+			"PAYLOAD_INIT_FAILED",
+			"Failed to initialize Payload.",
+		);
+	}
 	console.log("✅ Connected to Payload");
 
-	try {
-		const result = await execute(
-			payload,
-			collection as string,
-			action as any,
-			input as string,
-			cliConfig as any,
-		);
-		console.log("✨ Operation successful");
-	} catch (err: any) {
-		console.error("❌ Error:", err.message);
-		process.exit(1);
-	}
+	await execute(
+		payload,
+		collection as string,
+		action as any,
+		input as string,
+		cliConfig as any,
+	);
+	console.log("✨ Operation successful");
 	process.exit(0);
 }
 
-run().catch((err) => {
-	console.error("❌ Fatal Error:", err.message);
-	process.exit(1);
-});
+run().catch(handleError);

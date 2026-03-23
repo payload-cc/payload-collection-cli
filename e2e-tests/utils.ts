@@ -9,26 +9,29 @@ export const cliBin = path.resolve(e2eDir, "../dist/bin.js");
 /**
  * Runs the CLI command inside the dummy _payload application environment.
  */
-export function runCLI(args: string) {
+export function runCLI(args: string): string {
+	const { stdout, stderr } = runCLIFull(args);
+	return stdout + stderr;
+}
+
+export function runCLIFull(args: string): { stdout: string; stderr: string; status: number } {
 	try {
-		// Determine if we are on a system where export $(...) works.
-		// Otherwise, we fallback to a safer method.
 		const envCmd =
 			process.platform === "win32"
 				? ""
 				: 'export $(grep -v "^#" .env | xargs) && ';
 		const command = `NODE_OPTIONS="--max-old-space-size=4096" ${envCmd}npx tsx ${cliBin} ${args}`;
 
-		return execSync(command, {
+		const stdout = execSync(command, {
 			cwd: payloadAppDir,
 			encoding: "utf-8",
 			stdio: "pipe",
 		});
+		return { stdout, stderr: "", status: 0 };
 	} catch (err: any) {
 		const stdout = err.stdout?.toString() || "";
 		const stderr = err.stderr?.toString() || "";
-		if (stdout || stderr) return stdout + stderr;
-		return `❌ Execution Error: ${err.message}`;
+		return { stdout, stderr, status: err.status || 1 };
 	}
 }
 

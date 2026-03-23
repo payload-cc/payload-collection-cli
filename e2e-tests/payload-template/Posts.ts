@@ -20,5 +20,16 @@ export const Posts: CollectionConfig = {
 			relationTo: "categories",
 			required: true,
 		},
+		{
+			name: "metadata",
+			type: "group",
+			fields: [
+				{
+					name: "reviewer",
+					type: "relationship",
+					relationTo: "users",
+				},
+			],
+		},
 	],
 };

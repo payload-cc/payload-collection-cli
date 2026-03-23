@@ -1,0 +1,1 @@
+[{"op":"test","path":"/[title=Post 1]/author","value":"author@example.com"},{"op":"test","path":"/[title=Post 1]/category","value":"News"},{"op":"replace","path":"/[title=Post 1]/title","value":"Verified Post"}]

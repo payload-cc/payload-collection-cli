@@ -16,7 +16,7 @@ describe("Error validation", () => {
 		const output = runCLI(`posts create '${postData}'`);
 
 		// 2. Verify the output contains the validation error
-		expect(output).toContain("Error:");
+		expect(output).toContain("❌ Fatal Error:");
 		expect(output.toLowerCase()).toContain("error");
 		expect(output.toLowerCase()).toContain("title");
 		expect(output.toLowerCase()).toContain("author");

@@ -58,13 +58,16 @@ For `patch` and `sync` operations, the CLI supports identifier-based paths to ta
 - `/[field=value]/sub/path`: Target a document where `field` equals `value`.
 - `/-`: Appends a new document (used in `add` operations).
 
+> [!TIP]
+> While `patch` allows any field in the identifier path, it is recommended to use the `lookupField` defined in your mappings for consistency.
+
 Example: `/[email=user@example.com]/name` targets the `name` field of the user with that email.
 
 ---
 
 ## Configuration (`cliConfig`)
 
-The CLI strictly looks for a **named export** in the configuration file (defaulting to `cliConfig`). **Default exports are not supported.**
+The CLI strictly looks for a **named export** in the configuration file (defaulting to `cliConfig`).
 
 ### Relation Mappings
 The core of the configuration is the `mappings` object in your config file.
@@ -94,6 +97,20 @@ export const cliConfig = {
 | `lookupField` | `id` | The field used to find the target document. |
 | `onNotFound` | `'error'` | Action when a document is not found (`'error'`, `'ignore'`, `'create'`). |
 | `defaults` | _(none)_ | Default values injected into the record before processing. |
+
+### Interaction with Operations
+
+| Operation | `lookupField` Usage | `onNotFound` Usage | `defaults` Usage |
+|-----------|------------------|------------------|----------------|
+| `create`  | N/A              | N/A              | Applied to new doc |
+| `update`  | Required to find doc | N/A              | Applied to update data |
+| `delete`  | Required to find doc | N/A              | N/A |
+| `upsert`  | Required to find doc | N/A              | Applied (new/update) |
+| `patch`   | Recommended for paths | Applied to related docs | Applied to full-doc patch only |
+| `sync`    | Required to match docs | Applied to related docs | Applied (new/update) |
+
+> [!NOTE]
+> For `patch` operations, `defaults` are only applied if you are replacing the **entire document** (i.e., the patch path does not specify a sub-field). This prevents partial updates from inadvertently overwriting unrelated fields with default values.
 
 ---
 

@@ -4,11 +4,32 @@ import readline from "readline";
 import path from "path";
 import { resolveRelations } from "./resolver";
 import { Action, CLIConfig } from "./types";
+import { PayloadCollectionCLIError } from "./errors";
+
+function safeParseJson(input: string, slug: any = "INPUT_PARSE_FAILED"): any {
+	try {
+		return JSON.parse(input);
+	} catch (err: any) {
+		throw new PayloadCollectionCLIError(slug, `Failed to parse JSON: ${err.message}`, { input });
+	}
+}
 
 export interface PatchOperation {
 	op: "add" | "remove" | "replace" | "test";
 	path: string;
 	value?: any;
+}
+
+function buildNestedObject(path: string, value: any): any {
+	const parts = path.split(".");
+	const obj: any = {};
+	let current = obj;
+	for (let i = 0; i < parts.length - 1; i++) {
+		current[parts[i]] = {};
+		current = current[parts[i]];
+	}
+	current[parts[parts.length - 1]] = value;
+	return obj;
 }
 
 async function applyPatch(
@@ -17,9 +38,6 @@ async function applyPatch(
 	patch: PatchOperation[],
 	config: CLIConfig,
 ) {
-	const mapping = config.mappings[collection];
-	const lookupField = mapping?.lookupField || "id";
-
 	for (const op of patch) {
 		const pathParts = op.path.split("/").filter((p) => p !== "");
 		
@@ -46,31 +64,42 @@ async function applyPatch(
 				collection: collection as any,
 				where: { [field]: { equals: value } },
 				limit: 1,
+				depth: 0, // Disable population for raw value comparison
 			});
 
 			if (existing.docs.length === 0) {
-				throw new Error(`Document not found: ${field}=${value}`);
+				throw new PayloadCollectionCLIError(
+					"DOCUMENT_NOT_FOUND",
+					`Document not found: ${field}=${value}`,
+				);
 			}
 			const docId = existing.docs[0].id;
 
 			switch (op.op) {
 				case "replace":
-				case "add":
-					const updateData = subPath ? { [subPath]: op.value } : op.value;
-					const resolved = await resolveRelations(payload, collection, updateData, config);
+				case "add": {
+					const updateData = subPath ? buildNestedObject(subPath, op.value) : op.value;
+					const resolved = await resolveRelations(
+						payload, 
+						collection, 
+						updateData, 
+						config,
+						!!subPath // isPartial if subPath is present
+					);
 					await payload.update({
 						collection: collection as any,
 						id: docId,
 						data: resolved,
 					});
 					break;
+				}
 				case "remove":
 					if (subPath) {
 						// Partial remove (set to null/undefined)
 						await payload.update({
 							collection: collection as any,
 							id: docId,
-							data: { [subPath]: null },
+							data: buildNestedObject(subPath, null),
 						});
 					} else {
 						// Full delete
@@ -80,18 +109,36 @@ async function applyPatch(
 						});
 					}
 					break;
-				case "test":
-					// Simple test implementation
-					const currentVal = subPath ? existing.docs[0][subPath] : existing.docs[0];
-					if (JSON.stringify(currentVal) !== JSON.stringify(op.value)) {
-						throw new Error(`Test failed: ${op.path} value mismatch`);
+				case "test": {
+					// Resolve relations in testing value for consistency
+					const testData = subPath ? buildNestedObject(subPath, op.value) : op.value;
+					const resolvedTest = await resolveRelations(payload, collection, testData, config, true);
+					
+					// Re-extract value from nested structure for comparison
+					const expectedVal = subPath 
+						? subPath.split('.').reduce((obj, key) => obj?.[key], resolvedTest)
+						: resolvedTest;
+
+					const currentVal = subPath 
+						? subPath.split('.').reduce((obj, key) => obj?.[key], existing.docs[0])
+						: existing.docs[0];
+						
+					if (JSON.stringify(currentVal) !== JSON.stringify(expectedVal)) {
+						throw new PayloadCollectionCLIError(
+							"PATCH_TEST_FAILED",
+							`Test failed: ${op.path} value mismatch`,
+						);
 					}
 					break;
+				}
 			}
 			continue;
 		}
 
-		throw new Error(`Unsupported patch path or operation: ${op.op} ${op.path}`);
+		throw new PayloadCollectionCLIError(
+			"PATCH_INVALID_PATH",
+			`Unsupported patch path or operation: ${op.op} ${op.path}`,
+		);
 	}
 }
 
@@ -112,7 +159,10 @@ async function processSingle(
 			break;
 		case "update":
 			if (data[lookupField] === undefined) {
-				throw new Error(`[update] Missing lookup field '${lookupField}' in data. Cannot perform update.`);
+				throw new PayloadCollectionCLIError(
+					"MISSING_LOOKUP_FIELD",
+					`[update] Missing lookup field '${lookupField}' in data. Cannot perform update.`,
+				);
 			}
 			patch.push({ 
 				op: "replace", 
@@ -123,14 +173,20 @@ async function processSingle(
 		case "delete":
 			const delVal = typeof data === "object" ? data[lookupField] : data;
 			if (delVal === undefined) {
-				throw new Error(`[delete] Missing lookup field '${lookupField}' in action. Cannot perform delete.`);
+				throw new PayloadCollectionCLIError(
+					"MISSING_LOOKUP_FIELD",
+					`[delete] Missing lookup field '${lookupField}' in action. Cannot perform delete.`,
+				);
 			}
 			patch.push({ op: "remove", path: `/[${lookupField}=${delVal}]` });
 			break;
 		case "upsert":
 			const upsertVal = data[lookupField];
 			if (upsertVal === undefined) {
-				throw new Error(`[upsert] Missing lookup field '${lookupField}' in data. Cannot perform upsert.`);
+				throw new PayloadCollectionCLIError(
+					"MISSING_LOOKUP_FIELD",
+					`[upsert] Missing lookup field '${lookupField}' in data. Cannot perform upsert.`,
+				);
 			}
 			const existing = await payload.find({
 				collection: collection as any,
@@ -144,7 +200,10 @@ async function processSingle(
 			}
 			break;
 		default:
-			throw new Error(`Action ${action} requires special handling or is unsupported in processSingle`);
+			throw new PayloadCollectionCLIError(
+				"INVALID_ACTION",
+				`Action ${action} requires special handling or is unsupported in processSingle`,
+			);
 	}
 
 	return await applyPatch(payload, collection, patch, config);
@@ -158,16 +217,17 @@ export async function execute(
 	config: CLIConfig,
 ) {
 	if (action === "patch") {
-		const patch = input.endsWith(".json")
-			? JSON.parse(fs.readFileSync(path.resolve(process.cwd(), input), "utf8"))
-			: JSON.parse(input);
+		const patchContent = input.endsWith(".json")
+			? fs.readFileSync(path.resolve(process.cwd(), input), "utf8")
+			: input;
+		const patch = safeParseJson(patchContent, "PATCH_PARSE_FAILED");
 		return await applyPatch(payload, collection, Array.isArray(patch) ? patch : [patch], config);
 	}
 
 	if (action === "sync") {
 		const sourceData = input.endsWith(".jsonl") 
 			? await loadJsonl(input)
-			: JSON.parse(input);
+			: safeParseJson(input);
 		
 		const mapping = config.mappings[collection];
 		const lookupField = mapping?.lookupField || "id";
@@ -214,7 +274,7 @@ export async function execute(
 					payload,
 					collection,
 					action,
-					JSON.parse(line),
+					safeParseJson(line),
 					config,
 				);
 		}
@@ -225,7 +285,7 @@ export async function execute(
 		payload,
 		collection,
 		action,
-		JSON.parse(input),
+		safeParseJson(input),
 		config,
 	);
 }
@@ -233,5 +293,5 @@ export async function execute(
 async function loadJsonl(filePath: string): Promise<any[]> {
 	const absolutePath = path.resolve(process.cwd(), filePath);
 	const content = fs.readFileSync(absolutePath, "utf8");
-	return content.split("\n").filter(l => l.trim()).map(l => JSON.parse(l));
+	return content.split("\n").filter(l => l.trim()).map(l => safeParseJson(l));
 }
