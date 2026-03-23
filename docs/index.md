@@ -1,4 +1,6 @@
 ---
+title: Payload Collection CLI - Manage Collections via Terminal
+description: Simplify your Payload CMS 3.0 workflow. Run CRUD operations, resolve relationships, and process batch data directly from your terminal with zero scripting.
 layout: home
 hero:
   name: payload-collection-cli

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://payload-cc.github.io/payload-collection-cli/sitemap.xml

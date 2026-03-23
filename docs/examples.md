@@ -1,3 +1,8 @@
+---
+title: Examples & Use Cases | Payload Collection CLI
+description: Explore real-world examples and use cases for Payload Collection CLI, including batch processing, relation lookups, and automated data management.
+---
+
 # Examples & Use Cases
 
 This page showcases live examples of the **Payload Collection CLI** in action, automatically generated from our E2E test suite. Each section below represents a verified scenario, including the sample data and any custom mapping configuration used.

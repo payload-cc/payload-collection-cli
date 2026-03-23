@@ -6,6 +6,10 @@ export default defineConfig({
 	title: "Payload Collection CLI",
 	description: "Functional CLI for Payload 3.0 collection management",
 	base: "/payload-collection-cli/",
+	lastUpdated: true,
+	sitemap: {
+		hostname: "https://payload-cc.github.io/payload-collection-cli/",
+	},
 	head: [
 		[
 			"link",
@@ -13,6 +17,16 @@ export default defineConfig({
 				rel: "icon",
 				type: "image/png",
 				href: "/payload-collection-cli/logo.png",
+			},
+		],
+		["meta", { property: "og:type", content: "website" }],
+		["meta", { property: "og:locale", content: "en_US" }],
+		["meta", { property: "og:site_name", content: "Payload Collection CLI" }],
+		[
+			"meta",
+			{
+				property: "og:image",
+				content: "https://payload-cc.github.io/payload-collection-cli/logo.png",
 			},
 		],
 	],

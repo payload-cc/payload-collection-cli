@@ -1,3 +1,8 @@
+---
+title: Technical Specifications & FAQ | Payload Collection CLI
+description: Detailed documentation of CLI syntax, configuration options, relation mappings, and frequently asked questions for Payload Collection CLI.
+---
+
 # Payload Collection CLI - Specifications & FAQs
 
 ## CLI Syntax

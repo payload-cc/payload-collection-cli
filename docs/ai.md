@@ -1,3 +1,7 @@
+---
+title: AI Coding Context | Payload Collection CLI
+description: Comprehensive context bundle for AI-assisted development with Payload Collection CLI. Includes README, examples, and technical specifications.
+---
 # AI Coding Context
 
 > [!TIP]
