@@ -8,7 +8,7 @@ export interface CLIConfig {
 	mappings: Record<string, MappingConfig | undefined>;
 }
 
-export type Action = "create" | "update" | "delete" | "find" | "upsert";
+export type Action = "create" | "update" | "delete" | "find" | "upsert" | "patch" | "sync";
 
 export interface CommandArgs {
 	collection: string;

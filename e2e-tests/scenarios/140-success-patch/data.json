@@ -1,0 +1,5 @@
+[
+  { "op": "add", "path": "/-", "value": { "email": "patch-new@example.com", "password": "password123" } },
+  { "op": "replace", "path": "/[email=patch-old@example.com]/email", "value": "patch-updated@example.com" },
+  { "op": "remove", "path": "/[email=patch-delete@example.com]" }
+]
