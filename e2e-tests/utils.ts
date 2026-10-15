@@ -5,6 +5,9 @@ import fs from "fs";
 export const e2eDir = path.resolve(__dirname);
 export const payloadAppDir = path.join(e2eDir, "_payload");
 export const cliBin = path.resolve(e2eDir, "../dist/bin.js");
+const tsxLoader = path.resolve(e2eDir, "../node_modules/tsx/dist/loader.mjs");
+const nodeCommand = `"${process.execPath}" --import "${tsxLoader}"`;
+const execPrefix = process.platform === "win32" ? "" : "exec ";
 
 /**
  * Runs the CLI command inside the dummy _payload application environment.
@@ -18,12 +21,13 @@ export function runCLIFull(args: string): { stdout: string; stderr: string; stat
 	const envCmd = process.platform === "win32"
 		? ""
 		: 'export $(grep -v "^#" .env | xargs) && ';
-	const result = spawnSync(`${envCmd}npx tsx ${cliBin} ${args}`, {
+	const result = spawnSync(`${envCmd}${execPrefix}${nodeCommand} "${cliBin}" ${args}`, {
 		cwd: payloadAppDir,
 		encoding: "utf8",
 		shell: true,
 		env: { ...process.env, NODE_OPTIONS: "--max-old-space-size=4096" },
 		maxBuffer: 16 * 1024 * 1024,
+		timeout: 55000,
 	});
 	if (result.error) throw result.error;
 	const status = result.status ?? 1;
@@ -53,11 +57,12 @@ run();
 	const scriptPath = path.join(payloadAppDir, "check-db.ts");
 	fs.writeFileSync(scriptPath, scriptContent);
 	const out = execSync(
-		`export $(grep -v '^#' .env | xargs) && npx tsx check-db.ts`,
+		`export $(grep -v '^#' .env | xargs) && ${execPrefix}${nodeCommand} check-db.ts`,
 		{
 			cwd: payloadAppDir,
 			encoding: "utf-8",
-			stdio: ["ignore", "pipe", "ignore"],
+			stdio: ["ignore", "pipe", "pipe"],
+			timeout: 55000,
 		},
 	);
 	fs.unlinkSync(scriptPath);
