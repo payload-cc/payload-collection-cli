@@ -7,9 +7,12 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 import { execute } from "./executor";
+import { runWithCompletionGuard } from "./completion";
 import { PayloadCollectionCLIError, ERROR_TIPS } from "./errors";
 
-const jiti = createJiti(import.meta.url);
+// Prefer the project runtime loader (tsx / native ESM) and its module cache.
+// Jiti 2.7 falls back to transpilation when native TypeScript loading is unavailable.
+const jiti = createJiti(import.meta.url, { tryNative: true });
 
 const MappingConfigSchema = z.object({
 	lookupField: z.string().default("id"),
@@ -37,7 +40,7 @@ function handleError(err: any) {
 			console.error(err.stack);
 		}
 	}
-	process.exit(1);
+	process.exitCode = 1;
 }
 
 async function run() {
@@ -149,15 +152,20 @@ async function run() {
 	}
 	if (process.env.DEBUG) console.log("connected to payload");
 
-	await execute(
-		payload,
-		collection as string,
-		action as any,
-		input as string,
-		cliConfig as any,
-	);
+	try {
+		await execute(
+			payload,
+			collection as string,
+			action as any,
+			input as string,
+			cliConfig as any,
+		);
+	} finally {
+		await payload.destroy();
+	}
 	console.log("Operation successful");
-	process.exit(0);
+	// Let stdout/stderr drain; process.exit() can truncate piped output on Linux.
+	process.exitCode = 0;
 }
 
-run().catch(handleError);
+runWithCompletionGuard(run).catch(handleError);
