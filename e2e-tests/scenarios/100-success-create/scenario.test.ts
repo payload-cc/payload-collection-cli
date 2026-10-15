@@ -15,7 +15,7 @@ describe("Success Create", () => {
 		const dataFile = path.resolve(__dirname, "data.jsonl");
 
 		// runCLI returns the string output of the command
-		const output = runCLI(`users create ${dataFile}`);
+		const output = runCLI(["users", "create", dataFile]);
 
 		expect(output).toContain("Operation successful");
 

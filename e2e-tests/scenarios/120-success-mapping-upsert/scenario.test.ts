@@ -14,7 +14,7 @@ describe("Success mapping upsert", () => {
 		const dataPath = path.resolve(__dirname, "data.jsonl");
 		const configPath = path.resolve(__dirname, "config.ts");
 
-		const output = runCLI(`-c ${configPath} users upsert ${dataPath}`);
+		const output = runCLI(["-c", configPath, "users", "upsert", dataPath]);
 
 		expect(output).toContain("Operation successful");
 

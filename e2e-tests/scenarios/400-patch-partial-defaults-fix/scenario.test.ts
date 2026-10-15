@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { runCLI, resetDatabase, getCollectionData } from "../../utils";
+import { runCLI, resetDatabase, getCollectionData, payloadAppDir } from "../../utils";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -14,10 +14,10 @@ describe("Patch Partial Defaults Fix", () => {
 
 	it("does not apply defaults to partial field updates in patch", () => {
 		// 1. Create initial data
-		runCLI(`categories create '{"name": "Original Name", "displayName": "Original Display"}'`);
+		runCLI(["categories", "create", "{\"name\": \"Original Name\", \"displayName\": \"Original Display\"}"]);
 		
 		// 2. Define a config with a default for displayName
-		const configPath = path.resolve(__dirname, "config.ts");
+		const configPath = path.resolve(payloadAppDir, "scenario-400.config.ts");
 		const configContent = `
 			export const cliConfig = {
 				mappings: {
@@ -33,13 +33,13 @@ describe("Patch Partial Defaults Fix", () => {
 		fs.writeFileSync(configPath, configContent);
 
 		// 3. Patch only the 'name' field
-		const patchPath = path.resolve(__dirname, "patch.json");
+		const patchPath = path.resolve(payloadAppDir, "scenario-400-patch.json");
 		const patchContent = [
 			{ op: "replace", path: "/[name=Original Name]/name", value: "Updated Name" }
 		];
 		fs.writeFileSync(patchPath, JSON.stringify(patchContent));
 
-		const output = runCLI(`-c ${configPath} categories patch ${patchPath}`);
+		const output = runCLI(["-c", configPath, "categories", "patch", patchPath]);
 		expect(output).toContain("Operation successful");
 
 		// 4. Verify that displayName was NOT changed to the default

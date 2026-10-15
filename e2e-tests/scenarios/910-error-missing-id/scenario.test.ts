@@ -12,7 +12,7 @@ describe("Error missing ID strictly enforced", () => {
 		// a configuration mapping will strictly trigger the default `missing lookup field` error.
 		const dataPath = path.resolve(__dirname, "data.jsonl");
 
-		const output = runCLI(`users upsert ${dataPath}`);
+		const output = runCLI(["users", "upsert", dataPath], 1);
 
 		expect(output).toContain("lookup field 'id' in data");
 

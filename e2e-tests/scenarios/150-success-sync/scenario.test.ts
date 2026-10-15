@@ -13,14 +13,14 @@ describe("Success Sync", () => {
 
 	it("synchronizes a collection with a JSONL file successfully", () => {
 		// First, create some order data
-		runCLI(`users create '{"email": "sync-keep-updated@example.com", "name": "Old Name", "password": "password123"}'`);
-		runCLI(`users create '{"email": "sync-delete@example.com", "name": "Delete Me", "password": "password123"}'`);
+		runCLI(["users", "create", "{\"email\": \"sync-keep-updated@example.com\", \"name\": \"Old Name\", \"password\": \"password123\"}"]);
+		runCLI(["users", "create", "{\"email\": \"sync-delete@example.com\", \"name\": \"Delete Me\", \"password\": \"password123\"}"]);
 
 		const dataFile = path.resolve(__dirname, "data.jsonl");
 		const configFile = path.resolve(__dirname, "config.ts");
 		
 		// Run sync with config to use email as lookup
-		const output = runCLI(`-c ${configFile} users sync ${dataFile}`);
+		const output = runCLI(["-c", configFile, "users", "sync", dataFile]);
 
 		expect(output).toContain("Operation successful");
 

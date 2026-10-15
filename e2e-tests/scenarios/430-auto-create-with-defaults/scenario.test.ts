@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { runCLI, resetDatabase, getCollectionData } from "../../utils";
+import { runCLI, resetDatabase, getCollectionData, payloadAppDir } from "../../utils";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -14,10 +14,11 @@ describe("Auto Create with Defaults", () => {
 
 	it("applies defaults to documents auto-created via onNotFound: 'create'", () => {
 		// 1. Setup config with defaults and onNotFound: 'create' for 'categories'
-		const configPath = path.resolve(__dirname, "config.ts");
+		const configPath = path.resolve(payloadAppDir, "scenario-430.config.ts");
 		const configContent = `
 			export const cliConfig = {
 				mappings: {
+					users: { lookupField: 'email' },
 					categories: {
 						lookupField: 'name',
 						onNotFound: 'create',
@@ -30,9 +31,11 @@ describe("Auto Create with Defaults", () => {
 		`;
 		fs.writeFileSync(configPath, configContent);
 
+		runCLI(["users", "create", JSON.stringify({ email: "admin@example.com", password: "password123" })]);
+
 		// 2. Create a post with a category that doesn't exist
 		// This should trigger auto-creation of the category
-		runCLI(`-c ${configPath} posts create '{"title": "New Post", "author": "admin@example.com", "category": "Brand New Category"}'`);
+		runCLI(["-c", configPath, "posts", "create", "{\"title\": \"New Post\", \"author\": \"admin@example.com\", \"category\": \"Brand New Category\"}"]);
 
 		// 3. Verify that the auto-created category has its default displayName
 		const categories = getCollectionData("categories");

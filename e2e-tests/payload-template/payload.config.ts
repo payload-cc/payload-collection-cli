@@ -1,5 +1,4 @@
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import path from "path";
 import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
@@ -13,6 +12,8 @@ const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 export default buildConfig({
+	telemetry: false,
+	logger: { options: { level: "silent" } },
 	admin: {
 		user: Users.slug,
 		importMap: {
@@ -20,7 +21,6 @@ export default buildConfig({
 		},
 	},
 	collections: [Users, Media, Posts, Categories],
-	editor: lexicalEditor(),
 	secret: process.env.PAYLOAD_SECRET || "",
 	typescript: {
 		outputFile: path.resolve(dirname, "payload-types.ts"),
