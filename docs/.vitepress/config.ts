@@ -131,6 +131,7 @@ export default defineConfig({
 			{ text: "Examples", link: "/examples" },
 			{ text: "Specs", link: "/references/specs_detail" },
 			{ text: "AI Context", link: "/ai" },
+			{ text: "MCP", link: "/references/mcp" },
 		],
 		sidebar: [
 			{
@@ -143,7 +144,12 @@ export default defineConfig({
 			},
 			{
 				text: "Reference",
-				items: [{ text: "Detailed Specs", link: "/references/specs_detail" }],
+				items: [
+					{ text: "Detailed Specs", link: "/references/specs_detail" },
+					{ text: "Read Operations", link: "/references/reads" },
+					{ text: "Native Operations", link: "/references/native-operations" },
+					{ text: "MCP Servers", link: "/references/mcp" },
+				],
 			},
 		],
 		socialLinks: [

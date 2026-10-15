@@ -83,6 +83,8 @@ npx @payload-cc/payload-collection-cli -c ./my-map.config.ts users upsert data.j
 - `update`: Update existing records based on `lookupField`.
 - `delete`: Delete records.
 - `upsert`: Update if existing, create if not.
+- `patch`: Apply identifier-based patches.
+- `sync`: Synchronize a collection, including deletion of missing records.
 
 ## Reading data
 
@@ -123,6 +125,21 @@ changing the existing mapping/JSONL commands. Native writes return actual JSON
 results. Bulk errors fail nonzero; empty bulk filters require `allowAll: true`.
 See the [complete method coverage and options](docs/references/native-operations.md).
 Authentication, Globals and Jobs are separate from Collection document operations.
+
+## MCP integration
+
+Two stdio entrypoints ship in the same package:
+
+```sh
+payload-collection-docs-mcp
+payload-collection-mcp --project-root /absolute/path/to/payload-project
+```
+
+Docs MCP needs no Payload configuration or database. The CLI wrapper exposes every
+CLI action and configuration option from shared registries. Editing requires startup
+`--allow-write`; tool-selected config-file imports require `--allow-config-files`.
+Read-only mode is an action gate, **not** a sandbox for trusted Payload config/hooks.
+See [MCP setup, tool inputs, security and client configuration](docs/references/mcp.md).
 
 ## Specifications & FAQ
 
