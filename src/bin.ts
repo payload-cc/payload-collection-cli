@@ -7,7 +7,7 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 import { execute } from "./executor";
-import { runWithCompletionGuard } from "./completion";
+import { flushOutput, runWithCompletionGuard } from "./completion";
 import { PayloadCollectionCLIError, ERROR_TIPS } from "./errors";
 
 // Prefer the project runtime loader (tsx / native ESM) and its module cache.
@@ -24,7 +24,7 @@ const CLIConfigSchema = z.object({
 	mappings: z.record(z.string(), MappingConfigSchema).default({}),
 });
 
-function handleError(err: any) {
+async function handleError(err: any) {
 	if (err instanceof PayloadCollectionCLIError) {
 		console.error(`error: [${err.slug}] ${err.message}`);
 		const tip = ERROR_TIPS[err.slug];
@@ -41,6 +41,8 @@ function handleError(err: any) {
 		}
 	}
 	process.exitCode = 1;
+	await flushOutput();
+	process.exit(1);
 }
 
 async function run() {
@@ -164,8 +166,10 @@ async function run() {
 		await payload.destroy();
 	}
 	console.log("Operation successful");
-	// Let stdout/stderr drain; process.exit() can truncate piped output on Linux.
+	// Drain both streams before exiting, even if application hooks retain handles.
 	process.exitCode = 0;
+	await flushOutput();
+	process.exit(0);
 }
 
 runWithCompletionGuard(run).catch(handleError);
