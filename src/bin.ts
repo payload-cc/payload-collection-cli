@@ -7,9 +7,12 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 import { execute } from "./executor";
+import { flushOutput, runWithCompletionGuard } from "./completion";
 import { PayloadCollectionCLIError, ERROR_TIPS } from "./errors";
 
-const jiti = createJiti(import.meta.url);
+// Prefer the project runtime loader (tsx / native ESM) and its module cache.
+// Jiti 2.7 falls back to transpilation when native TypeScript loading is unavailable.
+const jiti = createJiti(import.meta.url, { tryNative: true });
 
 const MappingConfigSchema = z.object({
 	lookupField: z.string().default("id"),
@@ -21,7 +24,7 @@ const CLIConfigSchema = z.object({
 	mappings: z.record(z.string(), MappingConfigSchema).default({}),
 });
 
-function handleError(err: any) {
+async function handleError(err: any) {
 	if (err instanceof PayloadCollectionCLIError) {
 		console.error(`error: [${err.slug}] ${err.message}`);
 		const tip = ERROR_TIPS[err.slug];
@@ -37,6 +40,8 @@ function handleError(err: any) {
 			console.error(err.stack);
 		}
 	}
+	process.exitCode = 1;
+	await flushOutput();
 	process.exit(1);
 }
 
@@ -149,15 +154,22 @@ async function run() {
 	}
 	if (process.env.DEBUG) console.log("connected to payload");
 
-	await execute(
-		payload,
-		collection as string,
-		action as any,
-		input as string,
-		cliConfig as any,
-	);
+	try {
+		await execute(
+			payload,
+			collection as string,
+			action as any,
+			input as string,
+			cliConfig as any,
+		);
+	} finally {
+		await payload.destroy();
+	}
 	console.log("Operation successful");
+	// Drain both streams before exiting, even if application hooks retain handles.
+	process.exitCode = 0;
+	await flushOutput();
 	process.exit(0);
 }
 
-run().catch(handleError);
+runWithCompletionGuard(run).catch(handleError);

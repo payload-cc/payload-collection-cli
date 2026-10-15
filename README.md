@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/payload-cc/payload-collection-cli)](https://github.com/payload-cc/payload-collection-cli/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-VitePress-blue)](https://payload-cc.github.io/payload-collection-cli/)
 
-**The missing CLI for Payload 3.0. Manage collections without writing boilerplate scripts.**
+**The missing CLI for Payload 3. Manage collections without writing boilerplate scripts.**
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/payload-cc/payload-collection-cli/main/docs/public/logo.png" alt="Payload Collection CLI Logo" width="200"/>
@@ -21,7 +21,7 @@
 
 ## Why?
 
-Payload 3.0 is powerful, but performing simple data operations often requires writing one-off scripts. **payload-collection-cli** turns your terminal into a direct interface for your collections, supporting intelligent relation lookups by name/slug instead of cryptic IDs.
+Payload 3 is powerful, but performing simple data operations often requires writing one-off scripts. **payload-collection-cli** turns your terminal into a direct interface for your collections, supporting intelligent relation lookups by name/slug instead of cryptic IDs.
 
 ## Features
 
@@ -37,6 +37,22 @@ Payload 3.0 is powerful, but performing simple data operations often requires wr
 pnpm add @payload-cc/payload-collection-cli
 # or npm install @payload-cc/payload-collection-cli
 ```
+
+## Compatibility
+
+The supported Payload range is **3.90.2 or newer within v3**. Development and
+integration tests target 3.90.2, the latest stable release checked on 2026-10-15.
+Payload 4 prereleases are not supported. Use the same version for `payload` and
+your `@payloadcms/*` packages in the application consuming this CLI.
+
+Node.js must satisfy `^20.19.0 || ^22.12.0 || >=23` (the requirement of the CLI's
+argument parser); the development toolchain is pinned in `mise.toml`.
+
+**Upgrading an existing application from an older Payload release:** review the
+[Payload 3.90.0 migration notes](https://github.com/payloadcms/payload/releases/tag/v3.90.0).
+Regenerate application types and, for relational databases, create and review the
+required migrations before applying them in your environment. This CLI does not
+run migrations or modify your application's dependencies automatically.
 
 ## Quick Start
 

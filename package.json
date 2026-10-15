@@ -2,7 +2,7 @@
   "name": "@payload-cc/payload-collection-cli",
   "version": "1.4.0",
   "type": "module",
-  "description": "Functional CLI for Payload 3.0 collection management",
+  "description": "Functional CLI for Payload collection management",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/payload-cc/payload-collection-cli.git"
@@ -30,7 +30,8 @@
     "docs:preview": "vitepress preview docs",
     "lint": "biome lint .",
     "format": "biome format . --write",
-    "check": "biome check . --write"
+    "check": "biome check . --write",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "payload",
@@ -41,10 +42,10 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.32.1",
   "peerDependencies": {
-    "payload": "^3.0.0"
+    "payload": "^3.90.2"
   },
   "dependencies": {
-    "jiti": "^2.6.1",
+    "jiti": "^2.7.0",
     "yargs": "^18.0.0",
     "zod": "^4.3.6"
   },
@@ -52,10 +53,14 @@
     "@biomejs/biome": "2.4.8",
     "@types/node": "^25.5.0",
     "@types/yargs": "^17.0.35",
-    "payload": "^3.80.0",
+    "payload": "^3.90.2",
     "tsup": "^8.5.1",
+    "tsx": "4.23.12",
     "typescript": "^5.9.3",
     "vitepress": "^1.6.4",
     "vitest": "^4.1.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23"
   }
 }

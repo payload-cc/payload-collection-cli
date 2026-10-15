@@ -4,7 +4,7 @@ run = """
 #!/usr/bin/env bash
 set -e
 rm -rf _payload payload
-npx -y create-payload-app@latest -n _payload -t blank --db sqlite --no-deps --db-accept-recommended
+npx -y create-payload-app@3.90.2 -n _payload -t blank --db sqlite --no-deps --db-accept-recommended --no-agent --no-git --use-pnpm --version 3.90.2
 # Fallback rename just in case it creates 'payload' instead of '_payload'
 if [ -d "payload" ]; then mv payload _payload; fi
 cd _payload
@@ -16,7 +16,7 @@ cp ../payload-template/Categories.ts src/collections/Categories.ts
 cp ../payload-template/constants.ts src/constants.ts
 cp ../payload-template/payload.config.ts src/payload.config.ts
 pnpm install
-pnpm add @payloadcms/db-sqlite @payloadcms/richtext-lexical
+pnpm add @payloadcms/db-sqlite@3.90.2 @payloadcms/richtext-lexical@3.90.2
 """
 
 [tasks.test]
