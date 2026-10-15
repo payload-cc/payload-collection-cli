@@ -7,9 +7,12 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 import { execute } from "./executor";
+import { runWithCompletionGuard } from "./completion";
 import { PayloadCollectionCLIError, ERROR_TIPS } from "./errors";
 
-const jiti = createJiti(import.meta.url);
+// Prefer the project runtime loader (tsx / native ESM) and its module cache.
+// Jiti 2.7 falls back to transpilation when native TypeScript loading is unavailable.
+const jiti = createJiti(import.meta.url, { tryNative: true });
 
 const MappingConfigSchema = z.object({
 	lookupField: z.string().default("id"),
@@ -160,4 +163,4 @@ async function run() {
 	process.exit(0);
 }
 
-run().catch(handleError);
+runWithCompletionGuard(run).catch(handleError);
