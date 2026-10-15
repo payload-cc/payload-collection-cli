@@ -4,6 +4,8 @@ import readline from "readline";
 import path from "path";
 import { resolveRelations } from "./resolver";
 import { Action, CLIConfig } from "./types";
+import { COMMANDS, validateInvocation } from "./commands";
+import { executeRead } from "./reader";
 import { PayloadCollectionCLIError } from "./errors";
 
 function safeParseJson(input: string, slug: any = "INPUT_PARSE_FAILED"): any {
@@ -213,9 +215,13 @@ export async function execute(
 	payload: Payload,
 	collection: string,
 	action: Action,
-	input: string,
-	config: CLIConfig,
+	input: string | undefined = undefined,
+	config: CLIConfig = { mappings: {} },
 ) {
+	validateInvocation(collection, action, input);
+	if (COMMANDS[action].readOnly) return executeRead(payload, collection, action, input, config);
+	// Validation above guarantees input is present for every write action.
+	input = input!;
 	if (action === "patch") {
 		const patchContent = input.endsWith(".json")
 			? fs.readFileSync(path.resolve(process.cwd(), input), "utf8")

@@ -7,11 +7,18 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 import { execute } from "./executor";
+import { COMMANDS, validateInvocation } from "./commands";
 import { flushOutput, runWithCompletionGuard } from "./completion";
 import { PayloadCollectionCLIError, ERROR_TIPS } from "./errors";
 
 // Prefer the project runtime loader (tsx / native ESM) and its module cache.
 // Jiti 2.7 falls back to transpilation when native TypeScript loading is unavailable.
+const dataOutput = process.stdout.write.bind(process.stdout);
+
+async function printJSON(value: unknown) {
+	await new Promise<void>((resolve, reject) => dataOutput(JSON.stringify(value) + "\n", (error) => error ? reject(error) : resolve()));
+}
+
 const jiti = createJiti(import.meta.url, { tryNative: true });
 
 const MappingConfigSchema = z.object({
@@ -46,12 +53,14 @@ async function handleError(err: any) {
 }
 
 async function run() {
-	if (process.env.DEBUG) console.log("starting cli...");
+	if (process.env.DEBUG) console.error("starting cli...");
 	const root = process.cwd();
 
 	const argv = await yargs(hideBin(process.argv))
-		.usage("Usage: $0 [options] <collection-slug> <operation> <file or string>")
+		.usage("Usage: $0 [options] <collection-slug> <operation> [input]")
+		.parserConfiguration({ "parse-positional-numbers": false })
 		.options({
+			describe: { type: "boolean", describe: "Print the command catalog as JSON without opening Payload." },
 			"config-file": {
 				alias: "c",
 				type: "string",
@@ -70,11 +79,17 @@ async function run() {
 			},
 		})
 		.pkgConf("payload-collection-cli")
-		.demandCommand(3, "Collection slug, operation, and input are required.")
+		.strictOptions()
 		.help()
 		.parseSync();
 
-	if (process.env.DEBUG) console.log("parsed arguments:", JSON.stringify(argv, null, 2));
+	if (argv.describe) {
+		await printJSON({ commands: COMMANDS });
+		await flushOutput();
+		process.exit(0);
+	}
+	if (argv._.length > 3) throw new PayloadCollectionCLIError("INPUT_PARSE_FAILED", "Expected at most three positional arguments.");
+	if (process.env.DEBUG) console.error("parsed arguments:", JSON.stringify(argv, null, 2));
 
 	const {
 		configFile,
@@ -82,6 +97,13 @@ async function run() {
 		configExportName,
 		_: [collection, action, input],
 	} = argv as any;
+
+	validateInvocation(collection, action, input);
+	const reading = COMMANDS[action].readOnly;
+	if (reading) {
+		// Reserve the original stdout for one JSON value, including config/init logs.
+		process.stdout.write = process.stderr.write.bind(process.stderr);
+	}
 
 	let rawConfig: any = { mappings: {} };
 
@@ -142,7 +164,7 @@ async function run() {
 			"payload.config.ts not found.",
 		);
 	}
-	if (process.env.DEBUG) console.log(`loading payload config from: ${configPath}`);
+	if (process.env.DEBUG) console.error(`loading payload config from: ${configPath}`);
 
 	const { default: payloadConfig } = (await jiti.import(configPath)) as any;
 	const payload = await getPayload({ config: payloadConfig });
@@ -152,10 +174,11 @@ async function run() {
 			"Failed to initialize Payload.",
 		);
 	}
-	if (process.env.DEBUG) console.log("connected to payload");
+	if (process.env.DEBUG) console.error("connected to payload");
 
+	let result: unknown;
 	try {
-		await execute(
+		result = await execute(
 			payload,
 			collection as string,
 			action as any,
@@ -165,7 +188,8 @@ async function run() {
 	} finally {
 		await payload.destroy();
 	}
-	console.log("Operation successful");
+	if (reading) await printJSON(result);
+	else console.log("Operation successful");
 	// Drain both streams before exiting, even if application hooks retain handles.
 	process.exitCode = 0;
 	await flushOutput();

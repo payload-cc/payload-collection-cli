@@ -84,3 +84,16 @@ This document lists the standardized error slugs used by Payload Collection CLI.
 ### `PATCH_TEST_FAILED`
 **Description**: A `test` operation in a JSON Patch failed (the value at the target path did not match).
 **Resolution**: Verify the current state of the document and the expected value in your patch.
+
+
+## INPUT_REQUIRED
+
+The action requires input. Supply JSON or a supported write file. Only list/find/count accept omitted input.
+
+## QUERY_INVALID
+
+A read query contains unknown options, invalid types, or unsupported values. See [read options](./reads.md).
+
+## DOCUMENT_NOT_UNIQUE
+
+A get lookup matched multiple documents. Use an explicit ID or a unique mapping; the CLI never silently picks the first match.

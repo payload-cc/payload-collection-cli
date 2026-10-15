@@ -7,7 +7,7 @@ description: Detailed documentation of CLI syntax, configuration options, relati
 
 ## CLI Syntax
 ```bash
-npx @payload-cc/payload-collection-cli [options] <collection-slug> <operation> <file or string>
+npx @payload-cc/payload-collection-cli [options] <collection-slug> <operation> [input]
 ```
 
 ### Command Options
@@ -137,3 +137,8 @@ export const cliConfig = {
 
 ### Should I specify the ID in my data files?
 If you use `upsert`, `update`, or `delete` without a custom `lookupField`, you **must** provide the `id`. For `create`, Payload will auto-generate the ID.
+
+
+## Reading collections
+
+The `get`, `list` / `find`, and `count` commands return JSON and validate query options. See [Reading collections](./reads.md) for the complete query, mapping, pagination, output, and trust contract.
