@@ -15,3 +15,12 @@ export async function runWithCompletionGuard(operation: () => Promise<void>) {
 		process.removeListener("beforeExit", beforeExit);
 	}
 }
+
+/** Drain both queues before explicitly terminating a CLI with application handles. */
+export async function flushOutput(
+	streams: readonly Pick<NodeJS.WriteStream, "write">[] = [process.stdout, process.stderr],
+) {
+	await Promise.all(streams.map((stream) => new Promise<void>((resolve) => {
+		stream.write("", () => resolve());
+	})));
+}
