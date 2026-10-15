@@ -49,10 +49,10 @@ import configPromise from './src/payload.config';
 async function run() {
   const payload = await getPayload({ config: await configPromise });
   const docs = await payload.find({ collection: '${collection}' });
-  console.log(JSON.stringify(docs.docs));
-  process.exit(0);
+  await payload.destroy();
+  process.stdout.write(JSON.stringify(docs.docs) + '\n', () => process.exit(0));
 }
-run();
+await run();
   `;
 	const scriptPath = path.join(payloadAppDir, "check-db.ts");
 	fs.writeFileSync(scriptPath, scriptContent);

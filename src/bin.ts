@@ -40,7 +40,7 @@ function handleError(err: any) {
 			console.error(err.stack);
 		}
 	}
-	process.exit(1);
+	process.exitCode = 1;
 }
 
 async function run() {
@@ -152,15 +152,20 @@ async function run() {
 	}
 	if (process.env.DEBUG) console.log("connected to payload");
 
-	await execute(
-		payload,
-		collection as string,
-		action as any,
-		input as string,
-		cliConfig as any,
-	);
+	try {
+		await execute(
+			payload,
+			collection as string,
+			action as any,
+			input as string,
+			cliConfig as any,
+		);
+	} finally {
+		await payload.destroy();
+	}
 	console.log("Operation successful");
-	process.exit(0);
+	// Let stdout/stderr drain; process.exit() can truncate piped output on Linux.
+	process.exitCode = 0;
 }
 
 runWithCompletionGuard(run).catch(handleError);
