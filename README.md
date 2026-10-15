@@ -60,7 +60,7 @@ You can immediately start using the commands without any configuration for basic
 
 **Command Syntax**:
 ```bash
-npx @payload-cc/payload-collection-cli [options] <collection-slug> <operation> <file or string>
+npx @payload-cc/payload-collection-cli [options] <collection-slug> <operation> [input]
 ```
 
 **Examples**:
@@ -76,10 +76,53 @@ npx @payload-cc/payload-collection-cli -c ./my-map.config.ts users upsert data.j
 ```
 
 ## Available Actions
+- `get`: Read one document by ID or configured lookup value.
+- `list` / `find`: Query a paginated collection (input defaults to `{}`).
+- `count`: Count matching documents (input defaults to `{}`).
 - `create`: Create new records.
 - `update`: Update existing records based on `lookupField`.
 - `delete`: Delete records.
 - `upsert`: Update if existing, create if not.
+
+## Reading data
+
+```sh
+payload-collection-cli posts list
+payload-collection-cli posts find '{"where":{"title":{"contains":"Payload"}},"sort":"-createdAt","limit":20}'
+payload-collection-cli posts get '{"id":"document-id","depth":1}'
+payload-collection-cli users -j '{"mappings":{"users":{"lookupField":"email"}}}' get '"user@example.com"'
+payload-collection-cli posts count '{"where":{"title":{"contains":"Payload"}}}'
+payload-collection-cli --describe
+```
+
+Read commands emit **one JSON value on stdout**; configuration, Payload, and DEBUG
+logs go to stderr. `get` returns a document, `list`/`find` preserve Payload's
+pagination metadata, and `count` returns `{ "totalDocs": n }`. Reads do not apply
+mapping defaults or auto-create missing relations. Missing or ambiguous lookups
+fail instead of silently choosing or creating a document.
+
+See [read query options](docs/references/reads.md) for supported fields, defaults,
+ID versus mapped lookup syntax, and permissions. All operations use the trusted
+server-side Local API, not the permissions of a logged-in admin UI user.
+
+## Native document operations
+
+`duplicate` and the rest of Payload's Collection document API are also available:
+
+```sh
+payload-collection-cli categories duplicate '{"id":7,"data":{"name":"Copy"}}'
+payload-collection-cli categories findDistinct '{"field":"displayName"}'
+payload-collection-cli articles findVersions '{"where":{"parent":{"equals":7}}}'
+payload-collection-cli articles restoreVersion '{"id":"version-id","draft":true}'
+payload-collection-cli categories updateMany '{"where":{"name":{"equals":"Old"}},"data":{"displayName":"New"}}'
+```
+
+Native `createOne` / `updateOne` / `deleteOne` use explicit IDs and JSON option
+envelopes, supporting uploads, drafts/publication and trash lifecycle without
+changing the existing mapping/JSONL commands. Native writes return actual JSON
+results. Bulk errors fail nonzero; empty bulk filters require `allowAll: true`.
+See the [complete method coverage and options](docs/references/native-operations.md).
+Authentication, Globals and Jobs are separate from Collection document operations.
 
 ## Specifications & FAQ
 

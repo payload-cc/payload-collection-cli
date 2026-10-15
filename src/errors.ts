@@ -13,7 +13,12 @@ export type ErrorSlug =
 	| "PATCH_INVALID_OP"
 	| "PATCH_INVALID_PATH"
 	| "PATCH_TEST_FAILED"
-	| "INPUT_PARSE_FAILED";
+	| "INPUT_PARSE_FAILED"
+	| "INPUT_REQUIRED"
+	| "QUERY_INVALID"
+	| "DOCUMENT_NOT_UNIQUE"
+	| "OPERATION_UNAVAILABLE"
+	| "OPERATION_PARTIAL_FAILURE";
 
 export class PayloadCollectionCLIError extends Error {
 	public readonly slug: ErrorSlug;
@@ -28,6 +33,11 @@ export class PayloadCollectionCLIError extends Error {
 }
 
 export const ERROR_TIPS: Record<ErrorSlug, string> = {
+	INPUT_REQUIRED: "Provide JSON input for this operation. Use --describe for input requirements.",
+	OPERATION_UNAVAILABLE: "Enable the required collection feature (such as versions) in the trusted Payload configuration.",
+	OPERATION_PARTIAL_FAILURE: "Inspect returned docs/errors and database state before retrying; bulk writes may partially complete.",
+	QUERY_INVALID: "Use documented query options with correct JSON types; unknown options are rejected.",
+	DOCUMENT_NOT_UNIQUE: "Use an explicit id or configure a unique lookup field.",
 	CONFIG_NOT_FOUND: "Check the file path and ensure the file exists.",
 	CONFIG_INVALID:
 		"Check the syntax of your configuration file and ensure it matches the schema.",

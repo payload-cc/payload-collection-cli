@@ -8,7 +8,8 @@ export interface CLIConfig {
 	mappings: Record<string, MappingConfig | undefined>;
 }
 
-export type Action = "create" | "update" | "delete" | "find" | "upsert" | "patch" | "sync";
+import type { Action } from "./commands";
+export type { Action } from "./commands";
 
 export interface CommandArgs {
 	collection: string;
