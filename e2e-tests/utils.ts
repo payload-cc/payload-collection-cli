@@ -43,7 +43,7 @@ export function resetDatabase() {
 }
 
 export function getCollectionData(collection: string) {
-	const scriptContent = `
+	const scriptContent = String.raw`
 import { getPayload } from 'payload';
 import configPromise from './src/payload.config';
 async function run() {
