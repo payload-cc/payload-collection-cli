@@ -147,6 +147,7 @@ export default defineConfig({
 				items: [
 					{ text: "Detailed Specs", link: "/references/specs_detail" },
 					{ text: "Read Operations", link: "/references/reads" },
+					{ text: "Native Operations", link: "/references/native-operations" },
 					{ text: "MCP Servers", link: "/references/mcp" },
 				],
 			},

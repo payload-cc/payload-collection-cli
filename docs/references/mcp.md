@@ -73,8 +73,10 @@ refresh the embedded documents. The MCP server version matches `package.json`.
 ## CLI tools
 
 `cli_describe {}` returns the command/option catalog and active permissions, without
-initializing Payload. One `cli_<action>` tool is generated for **every** CLI action:
-`create`, `update`, `delete`, `upsert`, `patch`, `sync`, `get`, `list`, `find`, `count`.
+initializing Payload. One `cli_<action>` tool is generated for **every** CLI action,
+including `duplicate`, distinct/version operations, native ID/bulk CRUD and the
+existing mapping/JSONL/read workflows. Use `cli_describe` for the authoritative
+catalog; see [native operation coverage](./native-operations.md).
 Editing tools remain discoverable when disabled; calling one returns `isError: true`.
 
 All action tools share this input format:
@@ -90,13 +92,23 @@ All action tools share this input format:
 ```
 
 Use **either** `data` (a JSON value serialized once) **or** `input` (a raw CLI string).
-Use `input` for JSONL file paths, raw JSONL-compatible CLI input, or patch `.json`
+Use `input` for JSONL file paths, raw JSON strings, or patch `.json`
 file paths, for example `{"collection":"posts","input":"./input with spaces.jsonl"}`.
 Paths are passed literally and resolved by the CLI relative to the fixed project root;
 existing CLI support for absolute paths remains available. File access is **not**
 confined to this directory. See [CLI specs](./specs_detail.md) for each action's input
 format; notably `sync` takes a JSON array or a JSONL file, not a single object.
-`get` and all editing actions require input; `list`/`find`/`count` default to `{}`.
+`get` and all editing actions require input; `list`/`find`/`count` and
+`findVersions`/`countVersions` default to `{}`. Native operations require the
+JSON options envelope inside `data`, for example:
+
+```json
+{"collection":"categories","data":{"id":7,"data":{"name":"Copy"}}}
+```
+
+That is the input for `cli_duplicate`: outer `data` is the CLI JSON envelope;
+inner `data` contains document overrides. `cli_updateMany` / `cli_deleteMany`
+require a `where`; empty predicates additionally need `allowAll: true`.
 
 The tool `options` object is generated from the **same option registry as yargs**,
 using canonical flag names (CLI aliases still work on the standalone CLI):
@@ -114,11 +126,12 @@ fail closed. New options must explicitly classify code/data/discovery safety.
 
 ## Results, failures and process lifecycle
 
-Successful reads return `structuredContent.result` (parsed JSON), plus separate
-`stdout`, `stderr`, `exitCode` and `signal`. Successful edits return these process
+Successful reads **and native JSON editing actions** (including `duplicate`) return
+`structuredContent.result` (parsed JSON), plus separate
+`stdout`, `stderr`, `exitCode` and `signal`. Legacy mapping/JSONL edits return these process
 fields and the CLI's normal success output. Text content contains the same JSON for
 clients that do not expose structured content. Validation/permission failures,
-nonzero exits, signals, malformed read JSON, timeouts and output overflow return
+nonzero exits, signals, malformed expected JSON, timeouts and output overflow return
 `isError: true`; child diagnostics remain separate from protocol stdout.
 
 Each request spawns this package's CLI using argv, **never a shell**. The default
@@ -141,8 +154,9 @@ access files or use the network even during reads/initialization. Likewise,
 inputs. Existing package-level CLI defaults may already import code; review them.
 Do not grant an untrusted agent this server or production credentials.
 
-All editing operations require `--allow-write`. Destructive annotations cover
-`update`, `delete`, `upsert`, `patch` and `sync`; creation is also write-gated.
+All editing operations require `--allow-write`. Destructive annotations cover updates, deletes, upserts, patches, sync and version
+restore, in both native and legacy forms. Creation and duplication are also
+write-gated, although they are not annotated as destructive.
 `sync` can delete documents absent from its input. MCP annotations are descriptive
 hints, not client confirmation dialogs; arrange approvals in your client and use
 non-production data until you have inspected the intended changes.

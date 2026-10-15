@@ -276,3 +276,23 @@ it("propagates protocol cancellation to the CLI runner's AbortSignal", async () 
 	await expect(pending).rejects.toThrow("client cancelled");
 	await cancelled;
 });
+
+it.each(
+	ACTIONS.filter(
+		(action) =>
+			!COMMANDS[action].readOnly && COMMANDS[action].output === "json",
+	),
+)("parses JSON results for native write %s without treating it as read-only", async (action) => {
+	const run = vi
+		.fn()
+		.mockResolvedValue({ ...successful, stdout: '{"id":123}' });
+	const client = await connect(
+		createWrapperServer({ runner: { run }, allowWrite: true }),
+	);
+	const reply = await client.callTool({
+		name: `cli_${action}`,
+		arguments: { collection: "items", data: { id: 1, data: {} } },
+	});
+	expect(reply.isError).not.toBe(true);
+	expect(reply.structuredContent?.result).toEqual({ id: 123 });
+});

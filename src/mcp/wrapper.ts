@@ -142,12 +142,12 @@ export function createWrapperServer(options: WrapperOptions) {
 					const output = await options.runner.run(argv, extra.signal);
 					if (output.error || output.exitCode !== 0 || output.signal)
 						return result({ ...output }, true);
-					if (!command.readOnly) return result({ ...output });
+					if (command.output !== "json") return result({ ...output });
 					try {
 						return result({ ...output, result: JSON.parse(output.stdout) });
 					} catch {
 						return result(
-							{ ...output, error: "CLI read returned invalid JSON." },
+							{ ...output, error: "CLI command returned invalid JSON." },
 							true,
 						);
 					}
