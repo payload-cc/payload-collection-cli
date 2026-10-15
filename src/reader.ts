@@ -4,20 +4,50 @@ import { COMMANDS, isAction, type Action } from "./commands";
 import type { CLIConfig } from "./types";
 import { PayloadCollectionCLIError } from "./errors";
 
-type Selection = { [field: string]: boolean | Selection };
+export type Selection = { [field: string]: boolean | Selection };
 const selection: z.ZodType<Selection> = z.record(
 	z.string(),
 	z.union([z.boolean(), z.lazy(() => selection)]),
 );
-const identifier = z.union([z.string().min(1), z.number().int().safe()]);
-const common = z.object({
+export const identifier = z.union([z.string().min(1), z.number().int().safe()]);
+export const common = z.object({
 	depth: z.number().int().min(0).max(10).default(0),
 	locale: z.string().min(1).optional(),
-	fallbackLocale: z.union([z.string().min(1), z.literal(false)]).optional(),
+	fallbackLocale: z
+		.union([
+			z.string().min(1),
+			z.array(z.string().min(1)).min(1),
+			z.literal(false),
+		])
+		.optional(),
 	draft: z.boolean().optional(),
 	select: selection.optional(),
+	populate: z.record(z.string(), selection).optional(),
+	showHiddenFields: z.boolean().optional(),
+	trash: z.boolean().optional(),
+	includeLockStatus: z.boolean().optional(),
+	joins: z
+		.union([
+			z.literal(false),
+			z.record(
+				z.string(),
+				z.union([
+					z.literal(false),
+					z
+						.object({
+							count: z.boolean().optional(),
+							limit: z.number().int().min(0).optional(),
+							page: z.number().int().min(1).optional(),
+							sort: z.string().optional(),
+							where: z.record(z.string(), z.unknown()).optional(),
+						})
+						.strict(),
+				]),
+			),
+		])
+		.optional(),
 });
-const where = z.record(z.string(), z.unknown());
+export const where = z.record(z.string(), z.unknown());
 export const ListQuerySchema = common
 	.extend({
 		where: where.optional(),
@@ -33,12 +63,14 @@ export const CountQuerySchema = z
 	.object({
 		where: where.optional(),
 		locale: z.string().min(1).optional(),
+		trash: z.boolean().optional(),
 	})
 	.strict();
 export const GetQuerySchema = common
 	.extend({
 		id: identifier.optional(),
 		lookup: identifier.optional(),
+		flattenLocales: z.boolean().optional(),
 	})
 	.strict()
 	.refine(
@@ -48,7 +80,7 @@ export const GetQuerySchema = common
 		},
 	);
 
-function validate<T>(schema: z.ZodType<T>, data: unknown): T {
+export function validate<T>(schema: z.ZodType<T>, data: unknown): T {
 	const result = schema.safeParse(data);
 	if (!result.success) {
 		throw new PayloadCollectionCLIError(
@@ -113,7 +145,7 @@ export async function executeRead(
 			? { lookup: data }
 			: data,
 	);
-	const { id, lookup, ...options } = query;
+	const { id, lookup, flattenLocales, ...options } = query;
 	const lookupField = config.mappings[collection]?.lookupField ?? "id";
 	if (id !== undefined || lookupField === "id") {
 		const doc = await payload.findByID({
@@ -121,6 +153,7 @@ export async function executeRead(
 			id: id ?? lookup!,
 			...options,
 			disableErrors: true,
+			...(flattenLocales === undefined ? {} : { flattenLocales }),
 		} as any);
 		if (doc == null)
 			throw new PayloadCollectionCLIError(
@@ -129,6 +162,11 @@ export async function executeRead(
 			);
 		return doc;
 	}
+	if (flattenLocales !== undefined)
+		throw new PayloadCollectionCLIError(
+			"QUERY_INVALID",
+			"flattenLocales requires an explicit id or id lookup mapping.",
+		);
 	// Fetch two to detect ambiguous non-unique mappings; never silently pick one.
 	const result = await payload.find({
 		collection,

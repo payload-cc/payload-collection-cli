@@ -5,7 +5,7 @@ import path from 'node:path';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixture = path.join(here, '_payload');
 await mkdir(path.join(fixture, 'src', 'collections'), { recursive: true });
-for (const collection of ['Users', 'Media', 'Posts', 'Categories']) {
+for (const collection of ['Users', 'Media', 'Posts', 'Categories', 'Documents']) {
   await copyFile(path.join(here, 'payload-template', `${collection}.ts`),
     path.join(fixture, 'src', 'collections', `${collection}.ts`));
 }
