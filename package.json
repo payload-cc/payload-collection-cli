@@ -12,16 +12,18 @@
     "provenance": true
   },
   "bin": {
-    "payload-collection-cli": "./dist/bin.js"
+    "payload-collection-cli": "./dist/bin.js",
+    "payload-collection-docs-mcp": "./dist/docs-mcp.js",
+    "payload-collection-mcp": "./dist/cli-mcp.js"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/bin.ts --format cjs,esm --dts --clean --shims && chmod +x dist/bin.js",
+    "build": "tsup && chmod +x dist/bin.js dist/docs-mcp.js dist/cli-mcp.js",
     "release": "pnpm build && pnpm publish --access public",
     "test": "vitest run tests/*",
     "test:e2e": "pnpm e2e:prepare && pnpm build && vitest run e2e-tests/scenarios/ --no-file-parallelism --test-timeout 60000",
@@ -32,7 +34,8 @@
     "format": "biome format . --write",
     "check": "biome check . --write",
     "typecheck": "tsc --noEmit",
-    "e2e:prepare": "node e2e-tests/prepare.mjs"
+    "e2e:prepare": "node e2e-tests/prepare.mjs",
+    "test:package": "node scripts/check-package.mjs"
   },
   "keywords": [
     "payload",
@@ -46,6 +49,7 @@
     "payload": "^3.90.2"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
     "jiti": "^2.7.0",
     "yargs": "^18.0.0",
     "zod": "^4.3.6"

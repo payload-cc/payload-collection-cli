@@ -36,5 +36,8 @@ jobs:
       - name: Ensure Project Build
         run: pnpm build
       
+      - name: Smoke-test packed library and MCP entrypoints
+        run: pnpm test:package
+
       - name: Run deterministic SQLite E2E tests
         run: pnpm test:e2e

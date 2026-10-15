@@ -8,6 +8,7 @@ import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 import { execute } from "./executor";
 import { COMMANDS, validateInvocation } from "./commands";
+import { CLI_OPTIONS, yargsOptions } from "./cli-options";
 import { flushOutput, runWithCompletionGuard } from "./completion";
 import { PayloadCollectionCLIError, ERROR_TIPS } from "./errors";
 
@@ -59,32 +60,14 @@ async function run() {
 	const argv = await yargs(hideBin(process.argv))
 		.usage("Usage: $0 [options] <collection-slug> <operation> [input]")
 		.parserConfiguration({ "parse-positional-numbers": false })
-		.options({
-			describe: { type: "boolean", describe: "Print the command catalog as JSON without opening Payload." },
-			"config-file": {
-				alias: "c",
-				type: "string",
-				describe: "Path to a configuration file (named export required).",
-			},
-			"config-json": {
-				alias: "j",
-				type: "string",
-				describe: "Inline JSON string for configuration.",
-			},
-			"config-export-name": {
-				alias: "n",
-				type: "string",
-				describe: "The name of the export to use from the configuration file.",
-				default: "cliConfig",
-			},
-		})
+		.options(yargsOptions())
 		.pkgConf("payload-collection-cli")
 		.strictOptions()
 		.help()
 		.parseSync();
 
 	if (argv.describe) {
-		await printJSON({ commands: COMMANDS });
+		await printJSON({ commands: COMMANDS, options: CLI_OPTIONS });
 		await flushOutput();
 		process.exit(0);
 	}
