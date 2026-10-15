@@ -5,16 +5,18 @@ import { ACTIONS, COMMANDS, isAction } from "../src/commands";
 let payload: any;
 beforeEach(() => {
 	payload = {
-		collections: { categories: { config: { fields: [] } } },
-		find: vi
-			.fn()
-			.mockResolvedValue({
-				docs: [{ id: 7, name: "News" }],
-				totalDocs: 1,
-				totalPages: 1,
-			}),
+		collections: { categories: { config: { fields: [], versions: true } } },
+		find: vi.fn().mockResolvedValue({
+			docs: [{ id: 7, name: "News" }],
+			totalDocs: 1,
+			totalPages: 1,
+		}),
 		findByID: vi.fn().mockResolvedValue({ id: 7, name: "News" }),
 		count: vi.fn().mockResolvedValue({ totalDocs: 1 }),
+		findDistinct: vi.fn().mockResolvedValue({ values: [], totalDocs: 0 }),
+		findVersions: vi.fn().mockResolvedValue({ docs: [], totalDocs: 0 }),
+		findVersionByID: vi.fn().mockResolvedValue({ id: 1, version: {} }),
+		countVersions: vi.fn().mockResolvedValue({ totalDocs: 0 }),
 		create: vi.fn(),
 		update: vi.fn(),
 		delete: vi.fn(),
@@ -199,7 +201,13 @@ describe("read executor", () => {
 				payload,
 				"categories",
 				action,
-				action === "get" ? "7" : undefined,
+				action === "get"
+					? "7"
+					: action === "findDistinct"
+						? '{"field":"name"}'
+						: action === "findByID" || action === "findVersionByID"
+							? '{"id":7}'
+							: undefined,
 				config,
 			);
 		}

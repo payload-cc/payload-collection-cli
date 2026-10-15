@@ -97,3 +97,13 @@ A read query contains unknown options, invalid types, or unsupported values. See
 ## DOCUMENT_NOT_UNIQUE
 
 A get lookup matched multiple documents. Use an explicit ID or a unique mapping; the CLI never silently picks the first match.
+
+
+## OPERATION_UNAVAILABLE
+The selected collection does not enable the feature required by this operation
+(such as version history). Enable it in the trusted project configuration.
+
+## OPERATION_PARTIAL_FAILURE
+A native bulk API returned one or more errors. The command exits nonzero and
+includes the partial result in stderr. Some documents may already have changed;
+inspect successful docs/errors and current state before retrying.

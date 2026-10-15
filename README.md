@@ -107,6 +107,25 @@ See [read query options](docs/references/reads.md) for supported fields, default
 ID versus mapped lookup syntax, and permissions. All operations use the trusted
 server-side Local API, not the permissions of a logged-in admin UI user.
 
+## Native document operations
+
+`duplicate` and the rest of Payload's Collection document API are also available:
+
+```sh
+payload-collection-cli categories duplicate '{"id":7,"data":{"name":"Copy"}}'
+payload-collection-cli categories findDistinct '{"field":"displayName"}'
+payload-collection-cli articles findVersions '{"where":{"parent":{"equals":7}}}'
+payload-collection-cli articles restoreVersion '{"id":"version-id","draft":true}'
+payload-collection-cli categories updateMany '{"where":{"name":{"equals":"Old"}},"data":{"displayName":"New"}}'
+```
+
+Native `createOne` / `updateOne` / `deleteOne` use explicit IDs and JSON option
+envelopes, supporting uploads, drafts/publication and trash lifecycle without
+changing the existing mapping/JSONL commands. Native writes return actual JSON
+results. Bulk errors fail nonzero; empty bulk filters require `allowAll: true`.
+See the [complete method coverage and options](docs/references/native-operations.md).
+Authentication, Globals and Jobs are separate from Collection document operations.
+
 ## MCP integration
 
 Two stdio entrypoints ship in the same package:

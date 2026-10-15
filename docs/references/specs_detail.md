@@ -142,3 +142,9 @@ If you use `upsert`, `update`, or `delete` without a custom `lookupField`, you *
 ## Reading collections
 
 The `get`, `list` / `find`, and `count` commands return JSON and validate query options. See [Reading collections](./reads.md) for the complete query, mapping, pagination, output, and trust contract.
+
+
+## Complete Collection document API
+
+See [native operations](./native-operations.md) for duplication, distinct values,
+version history/restore, bulk writes, uploads, drafts/publication and trash.

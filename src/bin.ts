@@ -82,7 +82,7 @@ async function run() {
 	} = argv as any;
 
 	validateInvocation(collection, action, input);
-	const reading = COMMANDS[action].readOnly;
+	const reading = COMMANDS[action].output === "json";
 	if (reading) {
 		// Reserve the original stdout for one JSON value, including config/init logs.
 		process.stdout.write = process.stderr.write.bind(process.stderr);

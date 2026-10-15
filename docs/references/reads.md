@@ -27,6 +27,9 @@ A mapped lookup must be unique: zero matches produces `DOCUMENT_NOT_FOUND`, two
 or more produce `DOCUMENT_NOT_UNIQUE`. `onNotFound: "create"` and mapping defaults
 have **no effect on reads**. This also applies to a missing get-by-ID.
 
+See also [native document operations](./native-operations.md) for `findByID`,
+`findDistinct`, version history, duplication and the full Collection API coverage.
+
 ## Validated options
 
 | Option | get | list / find | count |
@@ -34,7 +37,13 @@ have **no effect on reads**. This also applies to a missing get-by-ID.
 | `depth` | Integer 0–10; default 0 | Integer 0–10; default 0 | — |
 | `select` | Nested object of boolean field selections | Same | — |
 | `locale` | Nonempty string | Same | Same |
-| `fallbackLocale` | String or false | Same | — |
+| `fallbackLocale` | String, nonempty locale list or false | Same | — |
+| `populate` | Collection → nested boolean selection | Same | — |
+| `showHiddenFields` | Boolean (sensitive: opt-in) | Same | — |
+| `trash` | Include trashed documents | Same | Same |
+| `includeLockStatus` | Boolean | Same | — |
+| `joins` | false or join query map (count/limit/page/sort/where) | Same | — |
+| `flattenLocales` | Boolean; only explicit ID / id lookup | — | — |
 | `draft` | Boolean | Boolean | — |
 | `where` | —; use ID or mapped lookup | Payload query object | Payload query object |
 | `page` | — | Integer >= 1; default 1 | — |
