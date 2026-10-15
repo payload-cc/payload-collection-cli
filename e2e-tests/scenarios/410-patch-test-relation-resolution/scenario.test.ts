@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { runCLI, resetDatabase, getCollectionData } from "../../utils";
+import { runCLI, resetDatabase, getCollectionData, payloadAppDir } from "../../utils";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -15,9 +15,9 @@ describe("Patch Test Relation Resolution", () => {
 	it("resolves relations in the 'test' operation of a patch for consistency", () => {
 		// 1. Setup collections
 		// Create a category
-		runCLI(`categories create '{"name": "News", "displayName": "News Category"}'`);
+		runCLI(["categories", "create", "{\"name\": \"News\", \"displayName\": \"News Category\"}"]);
 		// Create a user
-		runCLI(`users create '{"email": "author@example.com", "name": "Author", "password": "password123"}'`);
+		runCLI(["users", "create", "{\"email\": \"author@example.com\", \"name\": \"Author\", \"password\": \"password123\"}"]);
 		
 		// 2. Create a post referencing them
 		// We'll use sync or create with slugs if relations are resolved
@@ -26,7 +26,7 @@ describe("Patch Test Relation Resolution", () => {
 		
 		// Map slugs to IDs is what resolveRelations does.
 		// Let's create the post directly with slugs (which should work due to my fixes or existing logic)
-		const configPath = path.resolve(__dirname, "config.ts");
+		const configPath = path.resolve(payloadAppDir, "scenario-410.config.ts");
 		const configContent = `
 			export const cliConfig = {
 				mappings: {
@@ -37,10 +37,10 @@ describe("Patch Test Relation Resolution", () => {
 		`;
 		fs.writeFileSync(configPath, configContent);
 
-		runCLI(`-c ${configPath} posts create '{"title": "Post 1", "author": "author@example.com", "category": "News"}'`);
+		runCLI(["-c", configPath, "posts", "create", "{\"title\": \"Post 1\", \"author\": \"author@example.com\", \"category\": \"News\"}"]);
 
 		// 3. Perform a patch with a 'test' operation using slugs
-		const patchPath = path.resolve(__dirname, "patch.json");
+		const patchPath = path.resolve(payloadAppDir, "scenario-410-patch.json");
 		const patchContent = [
 			{ op: "test", path: "/[title=Post 1]/author", value: "author@example.com" },
 			{ op: "test", path: "/[title=Post 1]/category", value: "News" },
@@ -48,7 +48,7 @@ describe("Patch Test Relation Resolution", () => {
 		];
 		fs.writeFileSync(patchPath, JSON.stringify(patchContent));
 
-		const output = runCLI(`-c ${configPath} posts patch ${patchPath}`);
+		const output = runCLI(["-c", configPath, "posts", "patch", patchPath]);
 		expect(output).toContain("Operation successful");
 
 		const posts = getCollectionData("posts");

@@ -13,11 +13,11 @@ describe("Success Patch", () => {
 
 	it("applies a JSON Patch successfully to a collection", () => {
 		// First, create some initial data
-		runCLI(`users create '{"email": "patch-old@example.com", "password": "password123"}'`);
-		runCLI(`users create '{"email": "patch-delete@example.com", "password": "password123"}'`);
+		runCLI(["users", "create", "{\"email\": \"patch-old@example.com\", \"password\": \"password123\"}"]);
+		runCLI(["users", "create", "{\"email\": \"patch-delete@example.com\", \"password\": \"password123\"}"]);
 
 		const dataFile = path.resolve(__dirname, "data.json");
-		const output = runCLI(`users patch ${dataFile}`);
+		const output = runCLI(["users", "patch", dataFile]);
 
 		expect(output).toContain("Operation successful");
 

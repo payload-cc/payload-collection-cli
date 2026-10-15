@@ -13,7 +13,7 @@ describe("Error validation", () => {
 			author: "dev@example.com",
 			category: "general",
 		});
-		const output = runCLI(`posts create '${postData}'`);
+		const output = runCLI(["posts", "create", postData], 1);
 
 		// 2. Verify the output contains the validation error
 		expect(output).toContain("error: fatal:");
@@ -27,15 +27,11 @@ describe("Error validation", () => {
 
 	it("fails when a unique constraint is violated in create", () => {
 		// 1. Create a category
-		const output1 = runCLI(
-			`categories create '{"name": "unique-cat", "displayName": "Unique"}'`,
-		);
+		const output1 = runCLI(["categories", "create", "{\"name\": \"unique-cat\", \"displayName\": \"Unique\"}"]);
 		expect(output1).toContain("Operation successful");
 
 		// 2. Attempt to create another category with the same name
-		const output = runCLI(
-			`categories create '{"name": "unique-cat", "displayName": "Duplicate"}'`,
-		);
+		const output = runCLI(["categories", "create", "{\"name\": \"unique-cat\", \"displayName\": \"Duplicate\"}"], 1);
 
 		// 3. Verify the output contains the unique constraint error
 		expect(output.toLowerCase()).toContain("error");

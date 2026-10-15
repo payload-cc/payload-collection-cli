@@ -14,15 +14,13 @@ describe("Success delete", () => {
 			name: "Delete Me",
 			password: "password123",
 		});
-		runCLI(`users create '${userData}'`);
+		runCLI(["users", "create", userData]);
 
 		expect(getCollectionData("users")).toHaveLength(1);
 
 		// 2. Delete the user
 		const deleteData = JSON.stringify({ email: "delete-me@example.com" });
-		const output = runCLI(
-			`-j '{"mappings":{"users":{"lookupField":"email"}}}' users delete '${deleteData}'`,
-		);
+		const output = runCLI(["-j", "{\"mappings\":{\"users\":{\"lookupField\":\"email\"}}}", "users", "delete", deleteData]);
 
 		expect(output).toContain("Operation successful");
 		expect(getCollectionData("users")).toHaveLength(0);

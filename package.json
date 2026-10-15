@@ -24,14 +24,15 @@
     "build": "tsup src/index.ts src/bin.ts --format cjs,esm --dts --clean --shims && chmod +x dist/bin.js",
     "release": "pnpm build && pnpm publish --access public",
     "test": "vitest run tests/*",
-    "test:e2e": "vitest run e2e-tests/scenarios/ --no-file-parallelism --test-timeout 300000",
+    "test:e2e": "pnpm e2e:prepare && pnpm build && vitest run e2e-tests/scenarios/ --no-file-parallelism --test-timeout 60000",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "lint": "biome lint .",
     "format": "biome format . --write",
     "check": "biome check . --write",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "e2e:prepare": "node e2e-tests/prepare.mjs"
   },
   "keywords": [
     "payload",
@@ -51,10 +52,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.8",
+    "@payloadcms/db-sqlite": "3.90.2",
     "@types/node": "^25.5.0",
     "@types/yargs": "^17.0.35",
     "payload": "^3.90.2",
     "tsup": "^8.5.1",
+    "tsx": "4.23.12",
     "typescript": "^5.9.3",
     "vitepress": "^1.6.4",
     "vitest": "^4.1.0"

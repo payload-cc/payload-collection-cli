@@ -41,7 +41,7 @@ describe("Success package.json config", () => {
 		fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 
 		// 3. Run CLI WITHOUT -c or -j flags
-		const output = runCLI(`users upsert ${dataPath}`);
+		const output = runCLI(["users", "upsert", dataPath]);
 
 		// Cleanup package.json immediately
 		fs.writeFileSync(pkgPath, originalPkg);

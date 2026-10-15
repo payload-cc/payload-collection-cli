@@ -11,9 +11,7 @@ describe("Error invalid config", () => {
 		const dataPath = path.resolve(__dirname, "data.jsonl");
 
 		// 'invalid-action' is not a valid enum value for onNotFound
-		const output = runCLI(
-			`-j '{"mappings":{"users":{"onNotFound":"invalid-action"}}}' users upsert ${dataPath}`,
-		);
+		const output = runCLI(["-j", "{\"mappings\":{\"users\":{\"onNotFound\":\"invalid-action\"}}}", "users", "upsert", dataPath], 1);
 
 		expect(output).toContain("error: [CONFIG_INVALID] Invalid configuration structure:");
 		expect(output).toContain("mappings.users.onNotFound");
@@ -25,9 +23,7 @@ describe("Error invalid config", () => {
 	it("fails when lookupField is not a string", () => {
 		const dataPath = path.resolve(__dirname, "data.jsonl");
 
-		const output = runCLI(
-			`-j '{"mappings":{"users":{"lookupField": 123}}}' users upsert ${dataPath}`,
-		);
+		const output = runCLI(["-j", "{\"mappings\":{\"users\":{\"lookupField\": 123}}}", "users", "upsert", dataPath], 1);
 
 		expect(output).toContain("error: [CONFIG_INVALID] Invalid configuration structure:");
 		expect(output).toContain("mappings.users.lookupField");

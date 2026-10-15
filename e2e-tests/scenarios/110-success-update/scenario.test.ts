@@ -18,12 +18,12 @@ describe("Update Record", () => {
 			name: "Original Name",
 			password: "password123",
 		});
-		runCLI(`users create '${userData}'`);
+		runCLI(["users", "create", userData]);
 
 		// 2. Update the user's name using a config file and data file
 		const dataFile = path.resolve(__dirname, "data.jsonl");
 		const configFile = path.resolve(__dirname, "config.ts");
-		const output = runCLI(`-c ${configFile} users update ${dataFile}`);
+		const output = runCLI(["-c", configFile, "users", "update", dataFile]);
 
 		expect(output).toContain("Operation successful");
 
